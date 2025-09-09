@@ -1,267 +1,363 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>Meal Picker — Mobile</title>
-<meta name="color-scheme" content="dark light">
-<meta name="theme-color" content="#0b0b0b">
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<title>Meal Maker — Pro Mobile</title>
+<meta name="color-scheme" content="dark light"/>
+<meta name="theme-color" content="#0c0c0c"/>
 <style>
   :root{
-    --bg:#0b0b0b; --panel:#111; --panel2:#151515; --text:#f5f5f5;
-    --muted:#bdbdbd; --line:#222; --radius:14px; --maxw:460px;
+    --bg:#0c0c0c; --panel:#111213; --panel-2:#161718; --line:#222427;
+    --text:#f3f4f6; --muted:#b6bcc5; --accent:#e9ecef; --chip:#1b1d1f;
+    --radius:16px; --radius-sm:12px; --maxw:480px;
   }
   *{box-sizing:border-box}
+  html,body{height:100%}
   body{
     margin:0; background:var(--bg); color:var(--text);
-    font-family: ui-sans-serif, -apple-system, system-ui, "SF Pro Text", Inter, Roboto, Segoe UI, Arial, sans-serif;
+    font-family: ui-sans-serif,-apple-system,system-ui,"SF Pro Text",Inter,Roboto,Segoe UI,Arial,sans-serif;
     -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
   }
 
   /* Header */
   .topbar{position:sticky;top:0;z-index:50;border-bottom:1px solid var(--line);
-    background:linear-gradient(#0b0b0b, #0b0b0bcc 80%, #0b0b0b00);backdrop-filter:blur(6px)}
-  .topwrap{max-width:var(--maxw);margin:0 auto;padding:10px 14px;display:flex;gap:10px;align-items:center;justify-content:space-between}
+    background:linear-gradient(180deg,#0c0c0c 75%,#0c0c0c00);backdrop-filter:blur(6px)}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:12px 14px;display:flex;gap:12px;align-items:center;justify-content:space-between}
   .brand{display:flex;gap:10px;align-items:center}
-  .dot{width:8px;height:8px;border-radius:50%;background:#40e07b}
-  .title{line-height:1;margin:0}
-  .title strong{font-size:18px}
+  .dot{width:8px;height:8px;background:#48e58a;border-radius:50%}
+  .title{margin:0;line-height:1.15}
+  .title strong{display:block;font-size:18px}
   .title small{display:block;color:var(--muted)}
   .controls{display:flex;gap:8px;align-items:center}
-  .btn{appearance:none;border:1px solid var(--line);background:#141414;color:#fff;padding:10px 12px;border-radius:12px;font-weight:600;font-size:14px;min-height:44px}
-  .btn.primary{background:#1a1a1a;border-color:#272727}
-  .pill{border:1px solid #2a2a2a;background:#161616;color:#fff;padding:10px 12px;border-radius:999px;font-weight:700;font-size:14px}
+  .btn{appearance:none;border:1px solid var(--line);background:#161718;color:var(--text);
+    padding:10px 12px;border-radius:12px;font-weight:600;font-size:14px;min-height:44px}
+  .btn.primary{background:#1b1d1f}
+  .pill{border:1px solid var(--line);background:#151617;color:#fff;padding:8px 12px;border-radius:999px;font-weight:700;font-size:14px}
+
+  /* Progress (kcal ring) */
+  .ring{display:flex;align-items:center;gap:10px;border:1px solid var(--line);background:#151617;border-radius:999px;padding:8px 12px}
+  .ring-arc{--pct:0; width:28px;height:28px;border-radius:50%;
+    background:
+      radial-gradient(closest-side,#151617 67%,transparent 70% 100%),
+      conic-gradient(#e8e8e8 var(--pct), #2b2d31 0);
+  }
+  .ring .label{font-weight:700}
 
   main{max-width:var(--maxw);margin:0 auto;padding:12px 14px 80px}
 
-  /* Cards */
+  /* Tabs (meal sections) */
+  .tabs{display:flex;gap:8px;overflow:auto;padding:6px 0 10px}
+  .chip{white-space:nowrap;border:1px solid var(--line);background:var(--chip);color:#e6e7ea;padding:8px 12px;border-radius:999px;font-weight:600;font-size:13px}
+  .chip.active{background:#1f2225}
+
+  /* Card */
   .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;margin-bottom:14px}
-  .card-h{padding:14px;border-bottom:1px solid var(--line)}
-  .badge{display:inline-block;font-size:11px;color:#d7d7d7;padding:4px 8px;border:1px solid var(--line);border-radius:999px;background:#121212}
-  .h2{margin:8px 0 0;font-size:20px;font-weight:700}
+  .head{display:flex;align-items:center;gap:12px;padding:14px;border-bottom:1px solid var(--line)}
+  .mealpic{width:64px;height:64px;border-radius:12px;object-fit:cover;background:#0e0f10;border:1px solid #24272b}
+  .h2{margin:0;font-size:18px;font-weight:800}
   .meta{display:flex;gap:10px;color:var(--muted);font-size:13px;padding:10px 14px 8px}
 
-  .block{padding:8px 14px 12px}
-  .block h3{margin:8px 0 10px;font-size:14px;color:#e6e6e6}
-
-  /* Ingredients */
-  .ingList{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr;gap:10px}
-  .ingItem{display:flex;gap:10px;align-items:center;background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:8px;min-height:58px}
-  .thumb{width:46px;height:46px;border-radius:8px;object-fit:cover;display:block;background:#0e0e0e;border:1px solid #242424}
-  .ingName{font-size:15px}
+  /* Ingredients row (horizontal) */
+  .block{padding:10px 14px}
+  .block h3{margin:0 0 10px;font-size:14px;color:#e8eaee}
+  .ingRow{display:flex;gap:10px;overflow:auto;padding-bottom:2px}
+  .chip-ing{display:flex;align-items:center;gap:8px;background:var(--panel-2);border:1px solid var(--line);border-radius:999px;padding:6px 8px}
+  .ingThumb{width:32px;height:32px;border-radius:999px;object-fit:cover;background:#0f1012;border:1px solid #262a2f}
 
   /* Steps */
-  .steps{margin:0;padding-left:18px;color:#e7e7e7}
-  .steps li{margin:0 0 8px 0;line-height:1.4}
+  .stepList{margin:0;padding-left:18px;color:#e8eaee}
+  .stepList li{margin:0 0 8px}
 
-  /* Row actions */
-  .row-actions{display:flex;gap:8px;padding:12px 14px 14px;border-top:1px solid var(--line)}
-  .btn.tiny{font-size:12px;padding:8px 10px;min-height:36px}
+  /* Actions */
+  .row{display:flex;gap:8px;padding:12px 14px;border-top:1px solid var(--line)}
+  .btn.sm{font-size:12px;padding:8px 10px;min-height:36px}
 
-  /* Boosters */
-  .boost-meta{color:#d6d6d6;font-size:13px;margin:2px 0 8px}
+  /* Boosters card */
+  .muted{color:#cfd3d9;font-size:13px;margin:0 0 8px}
   .boostList{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
-  .boostItem{display:flex;gap:10px;align-items:center;background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:8px}
+  .boostItem{display:flex;gap:10px;align-items:center;background:var(--panel-2);border:1px solid var(--line);border-radius:12px;padding:8px}
+  .boostThumb{width:42px;height:42px;border-radius:10px;object-fit:cover;background:#0f1012;border:1px solid #24272b}
+
+  /* Bottom nav (visual only) */
+  .nav{position:sticky;bottom:0;z-index:40;background:#0c0c0c;border-top:1px solid var(--line)}
+  .navw{max-width:var(--maxw);margin:0 auto;padding:10px 14px;display:flex;gap:10px;justify-content:space-between}
+  .nav .i{width:34px;height:34px;border-radius:10px;background:#141517;border:1px solid var(--line)}
+
+  /* Safe area hugs */
+  @supports(padding:max(0px)){
+    .navw{padding-bottom:calc(10px + env(safe-area-inset-bottom))}
+  }
 </style>
 </head>
 <body>
   <header class="topbar">
-    <div class="topwrap">
+    <div class="wrap">
       <div class="brand">
         <span class="dot"></span>
-        <p class="title"><strong>Meal Picker</strong><small>Mobile</small></p>
+        <p class="title">
+          <strong>Meal Maker</strong>
+          <small id="today"></small>
+        </p>
       </div>
-      <div class="controls">
+      <div class="controls" id="controls">
         <button id="gen" class="btn primary">Generate</button>
         <button id="shuffle" class="btn">Shuffle</button>
         <button id="copy" class="btn">Copy</button>
-        <span id="total" class="pill">Total: 0 kcal</span>
       </div>
+    </div>
+    <div class="wrap" style="padding-top:0">
+      <div class="ring" id="ring">
+        <div class="ring-arc" id="ringArc" aria-hidden="true"></div>
+        <div class="label" id="totalLabel">Total: 0 kcal</div>
+      </div>
+      <div class="tabs" id="tabs" aria-label="Meals tabs"></div>
     </div>
   </header>
 
   <main id="app" tabindex="-1"></main>
 
+  <footer class="nav" aria-hidden="true">
+    <div class="navw"><div class="i"></div><div class="i"></div><div class="i"></div><div class="i"></div></div>
+  </footer>
+
   <!-- Meal card template -->
-  <template id="mealCardTpl">
-    <section class="card" role="region" aria-live="polite">
-      <div class="card-h">
-        <span class="badge"></span>
-        <h2 class="h2"></h2>
+  <template id="mealTpl">
+    <section class="card">
+      <div class="head">
+        <img class="mealpic" alt="" />
+        <div>
+          <h2 class="h2"></h2>
+          <div class="meta">
+            <span class="cal"></span>
+            <span class="time"></span>
+            <span class="tags"></span>
+          </div>
+        </div>
       </div>
-      <div class="meta">
-        <span class="cal"></span>
-        <span class="time"></span>
-        <span class="tags"></span>
-      </div>
+
       <div class="block">
         <h3>Ingredients</h3>
-        <ul class="ingList"></ul>
+        <div class="ingRow"></div>
       </div>
+
       <div class="block">
         <h3>Steps</h3>
-        <ol class="steps"></ol>
+        <ol class="stepList"></ol>
       </div>
-      <div class="row-actions">
-        <button class="btn tiny" data-act="regenerate">Regenerate</button>
-        <button class="btn tiny" data-act="swap">Swap</button>
-        <button class="btn tiny" data-act="copy">Copy</button>
+
+      <div class="row">
+        <button class="btn sm" data-act="regenerate">Regenerate</button>
+        <button class="btn sm" data-act="swap">Swap</button>
+        <button class="btn sm" data-act="copy">Copy</button>
       </div>
     </section>
   </template>
 
-  <!-- Boosters card template -->
+  <!-- Boosters -->
   <template id="boostTpl">
     <section class="card">
-      <div class="card-h"><h2 class="h2">Calorie Boosters</h2></div>
+      <div class="head"><h2 class="h2" style="margin-left:2px">Calorie Boosters</h2></div>
       <div class="block">
-        <p class="boost-meta">Added automatically to reach your daily goal (≥ 2500 kcal).</p>
+        <p class="muted">Added automatically to reach your daily goal (≥ 2500 kcal).</p>
         <ul class="boostList"></ul>
       </div>
     </section>
   </template>
 
 <script>
-/* ================= DATA ================= */
+/* ===== Utilities ===== */
+const $ = (s,el=document)=>el.querySelector(s);
+const $$ = (s,el=document)=>Array.from(el.querySelectorAll(s));
+const pick = arr => arr[Math.floor(Math.random()*arr.length)];
+const clone = id => $(id).content.cloneNode(true);
+const today = new Date();
+$("#today").textContent = today.toLocaleDateString(undefined,{weekday:'long', day:'numeric', month:'long'});
+
+/* ===== Data (curated) ===== */
 const MEAL_DATA = {
   breakfast: [
-    { name:"Zaatar & Labneh Wrap", calories:420, time:"10 min", tags:["Vegetarian","Quick"],
-      ingredients:["flatbread","labneh","zaatar","olive oil","cucumber","tomato","mint"],
-      steps:["Spread labneh on warm flatbread.","Sprinkle zaatar and drizzle olive oil.","Add sliced cucumber, tomato, and mint; roll tightly."]
-    },
-    { name:"Egg & Halloumi Plate", calories:480, time:"12 min", tags:["High-protein"],
-      ingredients:["eggs","halloumi","olives","cherry tomatoes","olive oil"],
-      steps:["Pan-sear halloumi until golden.","Fry or scramble eggs.","Plate with olives and tomatoes; drizzle olive oil."]
-    }
+    {name:"Zaatar & Labneh Wrap",calories:420,time:"10 min",tags:["Vegetarian","Quick"],
+     ingredients:["flatbread","labneh","zaatar","olive oil","cucumber","tomato","mint"],
+     steps:["Spread labneh on warm flatbread.","Sprinkle zaatar and drizzle olive oil.","Add cucumber, tomato, mint; roll tightly."]},
+    {name:"Egg & Halloumi Plate",calories:480,time:"12 min",tags:["High-protein"],
+     ingredients:["eggs","halloumi","olives","cherry tomatoes","olive oil"],
+     steps:["Sear halloumi until golden.","Fry or scramble eggs.","Plate with olives and tomatoes; drizzle olive oil."]}
   ],
   lunch: [
-    { name:"Chicken Shawarma Bowl", calories:650, time:"25 min", tags:["Protein","Prep"],
-      ingredients:["chicken breast","shawarma spice","rice","cabbage","garlic sauce"],
-      steps:["Season chicken; pan-sear.","Serve over rice with shredded cabbage.","Drizzle garlic sauce."]
-    },
-    { name:"Tuna Pasta Salad", calories:560, time:"20 min", tags:["Cold","Quick"],
-      ingredients:["pasta","tuna","sweet corn","olive oil","lemon","parsley"],
-      steps:["Boil pasta, cool.","Mix with tuna, corn, parsley.","Dress with oil and lemon."]
-    }
+    {name:"Chicken Shawarma Bowl",calories:650,time:"25 min",tags:["Protein","Prep"],
+     ingredients:["chicken breast","shawarma spice","rice","cabbage","garlic sauce"],
+     steps:["Season chicken; pan-sear.","Serve over rice with shredded cabbage.","Drizzle garlic sauce."]},
+    {name:"Tuna Pasta Salad",calories:560,time:"20 min",tags:["Cold","Quick"],
+     ingredients:["pasta","tuna","sweet corn","olive oil","lemon","parsley"],
+     steps:["Boil pasta; cool.","Mix with tuna, corn, parsley.","Dress with oil and lemon."]}
   ],
   dinner: [
-    { name:"Grilled Kofta with Bulgur", calories:700, time:"30 min", tags:["Balanced"],
-      ingredients:["kofta","bulgur","tomato","yogurt","parsley"],
-      steps:["Grill kofta.","Simmer bulgur until fluffy.","Serve with chopped tomato, parsley, and yogurt."]
-    },
-    { name:"Salmon & Veg Traybake", calories:590, time:"25 min", tags:["Omega-3","One-pan"],
-      ingredients:["salmon","potatoes","broccoli","olive oil","lemon","garlic"],
-      steps:["Roast potatoes 10 min.","Add salmon and broccoli; season with oil, lemon, garlic; roast 12–15 min."]
-    }
+    {name:"Grilled Kofta with Bulgur",calories:700,time:"30 min",tags:["Balanced"],
+     ingredients:["kofta","bulgur","tomato","yogurt","parsley"],
+     steps:["Grill kofta.","Simmer bulgur until fluffy.","Serve with chopped tomato, parsley, and yogurt."]},
+    {name:"Salmon & Veg Traybake",calories:590,time:"25 min",tags:["Omega-3","One-pan"],
+     ingredients:["salmon","potatoes","broccoli","olive oil","lemon","garlic"],
+     steps:["Roast potatoes 10 min.","Add salmon and broccoli; season; roast 12–15 min."]}
   ],
   snack: [
-    { name:"Dates & Peanut Butter", calories:260, time:"2 min", tags:["Quick","Sweet"],
-      ingredients:["medjool dates","peanut butter","walnuts"],
-      steps:["Pit dates; fill with peanut butter; top with walnuts."]
-    },
-    { name:"Greek Yogurt Cup", calories:280, time:"3 min", tags:["Protein"],
-      ingredients:["greek yogurt","honey","banana","oats"],
-      steps:["Layer yogurt with banana; drizzle honey; sprinkle oats."]
-    }
+    {name:"Dates & Peanut Butter",calories:260,time:"2 min",tags:["Quick","Sweet"],
+     ingredients:["medjool dates","peanut butter","walnuts"],
+     steps:["Pit dates; fill with peanut butter; top with walnuts."]},
+    {name:"Greek Yogurt Cup",calories:280,time:"3 min",tags:["Protein"],
+     ingredients:["greek yogurt","honey","banana","oats"],
+     steps:["Layer yogurt with banana; drizzle honey; sprinkle oats."]}
   ]
 };
 
-/* =============== IMAGE HELPERS (REAL PHOTOS) =============== */
-function photoFor(ingredient){
-  const q = encodeURIComponent(ingredient + ", food, isolated");
-  return `https://source.unsplash.com/featured/?${q}`;
+const BOOSTERS = [
+  {name:"extra olive oil (1 tbsp)",calories:120},
+  {name:"mixed nuts (30 g)",calories:170},
+  {name:"peanut butter (1 tbsp)",calories:190},
+  {name:"pita bread",calories:180},
+  {name:"avocado (1/2)",calories:120},
+  {name:"rice (1 cup cooked)",calories:200},
+  {name:"dark chocolate (30 g)",calories:170},
+  {name:"granola (40 g)",calories:180},
+];
+
+/* ===== Images (real photos w/ fallback) ===== */
+function photoFor(q){
+  return `https://source.unsplash.com/featured/?${encodeURIComponent(q+', food, isolated')}`;
 }
-const PLACEHOLDER_SVG =
-  "data:image/svg+xml;utf8," + encodeURIComponent(
-    "<svg xmlns='http://www.w3.org/2000/svg' width='92' height='92' viewBox='0 0 92 92'><rect width='92' height='92' rx='10' ry='10' fill='%23121212' stroke='%23242424'/><path d='M20 60h52M24 50l10-12 12 14 8-10 14 18' stroke='%23e6e6e6' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>"
-  );
-function imgThumb(src, alt){
+const PLACEHOLDER =
+  "data:image/svg+xml;utf8,"+encodeURIComponent("<svg xmlns='http://www.w3.org/2000/svg' width='96' height='96'><rect width='96' height='96' rx='12' ry='12' fill='%23121416' stroke='%2325292f'/><circle cx='48' cy='36' r='16' fill='%23232a31'/><rect x='20' y='58' width='56' height='10' rx='5' fill='%23232a31'/></svg>");
+
+function makeImg(cls,src,alt){
   const img = new Image();
+  img.className = cls;
   img.loading = "lazy";
   img.decoding = "async";
-  img.width = 46;
-  img.height = 46;
-  img.className = "thumb";
-  img.alt = alt || "ingredient";
   img.referrerPolicy = "no-referrer";
   img.src = src;
-  img.onerror = () => { img.src = PLACEHOLDER_SVG; };
+  img.alt = alt || "";
+  img.onerror = ()=>{ img.src = PLACEHOLDER; };
   return img;
 }
 
-/* ================== APP ================== */
+/* ===== App state ===== */
 const TYPES = ["breakfast","lunch","dinner","snack"];
 const STATE = { meals:{}, boosters:[] };
-const $ = (s,el=document)=>el.querySelector(s);
-const pick = arr => arr[Math.floor(Math.random()*arr.length)];
-const cloneTpl = id => $(id).content.cloneNode(true);
 
 function makeMeal(type){
   const v = pick(MEAL_DATA[type]);
   return { type, name:v.name, calories:v.calories, time:v.time, tags:[...v.tags], ingredients:[...v.ingredients], steps:[...v.steps] };
 }
+function kcalMeals(){ return TYPES.reduce((s,t)=> s + (STATE.meals[t]?.calories||0), 0); }
+function kcalBoosters(){ return STATE.boosters.reduce((s,b)=> s + b.calories, 0); }
+function kcalTotal(){ return kcalMeals()+kcalBoosters(); }
 
-function kcalTotal(){
-  const meals = TYPES.reduce((sum,t)=> sum + (STATE.meals[t]?.calories || 0), 0);
-  const boosts = STATE.boosters.reduce((s,b)=> s + b.calories, 0);
-  return meals + boosts;
+/* ===== UI: tabs ===== */
+function buildTabs(){
+  const bar = $("#tabs"); bar.innerHTML = "";
+  TYPES.forEach((t,i)=>{
+    const a = document.createElement("button");
+    a.className = "chip"+(i===0?" active":"");
+    a.textContent = t[0].toUpperCase()+t.slice(1);
+    a.onclick = ()=>{
+      $$(".chip",bar).forEach(c=>c.classList.remove("active"));
+      a.classList.add("active");
+      const target = document.getElementById(`meal-${t}`);
+      if(target){ target.scrollIntoView({behavior:"smooth",block:"start"}); }
+    };
+    bar.appendChild(a);
+  });
 }
-function updateTotal(){ $("#total").textContent = `Total: ${kcalTotal()} kcal`; }
 
+/* ===== Renderers ===== */
 function renderMealCard(meal){
-  const tpl = cloneTpl("#mealCardTpl");
-  tpl.querySelector(".badge").textContent = meal.type.toUpperCase();
+  const tpl = clone("#mealTpl");
+  const card = tpl.querySelector("section");
+  card.id = `meal-${meal.type}`;
+
+  const mealPic = tpl.querySelector(".mealpic");
+  // Use the first ingredient as hero query; fallback to meal name
+  const heroQuery = meal.ingredients[0] || meal.name;
+  const hero = makeImg("mealpic", photoFor(heroQuery), meal.name);
+  mealPic.replaceWith(hero);
+
   tpl.querySelector(".h2").textContent = meal.name;
   tpl.querySelector(".cal").textContent = `${meal.calories} kcal`;
   tpl.querySelector(".time").textContent = `⏱ ${meal.time}`;
   tpl.querySelector(".tags").textContent = meal.tags.join(" • ");
 
-  const ingList = tpl.querySelector(".ingList");
+  const ingRow = tpl.querySelector(".ingRow");
   meal.ingredients.forEach(ing=>{
-    const li = document.createElement("li");
-    li.className = "ingItem";
-    li.appendChild(imgThumb(photoFor(ing), ing));
-    const span = document.createElement("span");
-    span.className = "ingName"; span.textContent = ing;
-    li.appendChild(span);
-    ingList.appendChild(li);
+    const chip = document.createElement("div"); chip.className = "chip-ing";
+    chip.appendChild(makeImg("ingThumb", photoFor(ing), ing));
+    const label = document.createElement("span"); label.textContent = ing;
+    chip.appendChild(label);
+    ingRow.appendChild(chip);
   });
 
-  const steps = tpl.querySelector(".steps");
+  const steps = tpl.querySelector(".stepList");
   meal.steps.forEach(s=>{ const li = document.createElement("li"); li.textContent = s; steps.appendChild(li); });
 
-  // actions
+  // Actions
   tpl.querySelector('[data-act="regenerate"]').onclick = ()=>{ STATE.meals[meal.type] = makeMeal(meal.type); draw(); };
   tpl.querySelector('[data-act="swap"]').onclick = ()=>{
-    const other = pick(TYPES.filter(t=> t!==meal.type));
-    STATE.meals[other] = makeMeal(other);
-    delete STATE.meals[meal.type];
-    draw();
+    const other = pick(TYPES.filter(t=>t!==meal.type)); STATE.meals[other] = makeMeal(other); delete STATE.meals[meal.type]; draw();
   };
   tpl.querySelector('[data-act="copy"]').onclick = ()=>{
-    navigator.clipboard.writeText(textifyMeal(meal)).then(()=> toast("Copied"));
+    navigator.clipboard.writeText(textifyMeal(meal)).then(()=>toast("Copied meal"));
   };
 
   return tpl;
 }
 
-function renderBoostersCard(){
+function renderBoosters(){
   if(!STATE.boosters.length) return document.createDocumentFragment();
-  const tpl = cloneTpl("#boostTpl");
+  const tpl = clone("#boostTpl");
   const ul = tpl.querySelector(".boostList");
   STATE.boosters.forEach(b=>{
-    const li = document.createElement("li");
-    li.className = "boostItem";
-    li.appendChild(imgThumb(photoFor(b.name), b.name));
-    const span = document.createElement("span");
-    span.className = "ingName";
-    span.textContent = `${b.name}  +${b.calories} kcal`;
+    const li = document.createElement("li"); li.className = "boostItem";
+    li.appendChild(makeImg("boostThumb", photoFor(b.name), b.name));
+    const span = document.createElement("span"); span.textContent = `${b.name}  +${b.calories} kcal`;
     li.appendChild(span);
     ul.appendChild(li);
   });
   return tpl;
 }
 
+/* ===== Calories ring & total ===== */
+function updateTotalsUI(){
+  const total = kcalTotal();
+  const pct = Math.min(total/2500, 1); // ring to goal
+  $("#totalLabel").textContent = `Total: ${total} kcal`;
+  $("#ringArc").style.setProperty("--pct", (pct*360)+"deg");
+}
+
+/* ===== Goal logic (≥ 2500 kcal) ===== */
+function ensureFloor(target=2500){
+  STATE.boosters = [];
+  let need = target - kcalMeals();
+  let i = 0;
+  while(need > 0 && i < 20){
+    const b = BOOSTERS[i % BOOSTERS.length];
+    STATE.boosters.push(b);
+    need -= b.calories; i++;
+  }
+}
+
+/* ===== Draw / Generate ===== */
+function draw(){
+  const app = $("#app"); app.innerHTML = "";
+  ensureFloor(2500);
+
+  TYPES.forEach(t=>{ if(STATE.meals[t]) app.appendChild(renderMealCard(STATE.meals[t])); });
+  app.appendChild(renderBoosters());
+
+  updateTotalsUI();
+}
+function generate(){ TYPES.forEach(t=> STATE.meals[t] = makeMeal(t)); draw(); }
+function shuffle(){ generate(); }
+
+/* ===== Text export ===== */
 function textifyMeal(m){
   return `${m.type.toUpperCase()}: ${m.name}
 Calories: ${m.calories} • Time: ${m.time} • ${m.tags.join(", ")}
@@ -272,65 +368,31 @@ Ingredients:
 Steps:
 ${m.steps.map((s,i)=>`${i+1}. ${s}`).join("\n")}`;
 }
-
-/* ---- Calorie goal (≥ 2500 kcal) via boosters ---- */
-const BOOSTERS = [
-  {name:"extra olive oil (1 tbsp)", calories:120},
-  {name:"mixed nuts (30 g)", calories:170},
-  {name:"peanut butter (1 tbsp)", calories:190},
-  {name:"pita bread", calories:180},
-  {name:"avocado (1/2)", calories:120},
-  {name:"rice (1 cup cooked)", calories:200},
-  {name:"dark chocolate (30 g)", calories:170},
-  {name:"granola (40 g)", calories:180}
-];
-function ensureCalorieFloor(target=2500){
-  STATE.boosters = [];
-  let need = target - TYPES.reduce((s,t)=> s + (STATE.meals[t]?.calories || 0), 0);
-  let i = 0;
-  while(need > 0 && i < 20){
-    const b = BOOSTERS[i % BOOSTERS.length];
-    STATE.boosters.push(b);
-    need -= b.calories;
-    i++;
-  }
+function copyDay(){
+  const meals = TYPES.map(t=> STATE.meals[t] ? textifyMeal(STATE.meals[t]) : "").join("\n\n---\n\n");
+  const boosts = STATE.boosters.length ? `\n\nBoosters:\n- ${STATE.boosters.map(b=>`${b.name} (+${b.calories} kcal)`).join("\n- ")}` : "";
+  const total = `\n\nTOTAL: ${kcalTotal()} kcal`;
+  navigator.clipboard.writeText(meals+boosts+total).then(()=>toast("Day copied"));
 }
 
-/* ---- Render / Generate ---- */
-function draw(){
-  const app = $("#app");
-  app.innerHTML = "";
-  ensureCalorieFloor(2500);
-  TYPES.forEach(t=>{ if(STATE.meals[t]) app.appendChild(renderMealCard(STATE.meals[t])); });
-  app.appendChild(renderBoostersCard());
-  updateTotal();
-}
-function genDay(){ TYPES.forEach(t=> STATE.meals[t] = makeMeal(t)); draw(); }
-function shuffleDay(){ TYPES.forEach(t=> STATE.meals[t] = makeMeal(t)); draw(); }
-
-/* ---- Tiny toast ---- */
+/* ===== Tiny toast ===== */
 let toastEl;
 function toast(msg){
   if(!toastEl){
-    toastEl = document.createElement('div');
-    Object.assign(toastEl.style,{position:'fixed',bottom:'18px',left:'50%',transform:'translateX(-50%)',background:'#171717',color:'#fff',border:'1px solid #262626',padding:'10px 14px',borderRadius:'10px',zIndex:9999});
+    toastEl = document.createElement("div");
+    Object.assign(toastEl.style,{position:"fixed",bottom:"18px",left:"50%",transform:"translateX(-50%)",
+      background:"#17191b",color:"#fff",border:"1px solid #262a2f",padding:"10px 14px",borderRadius:"10px",zIndex:9999});
     document.body.appendChild(toastEl);
   }
-  toastEl.textContent = msg; toastEl.style.opacity='1'; setTimeout(()=> toastEl.style.opacity='0', 1000);
+  toastEl.textContent = msg; toastEl.style.opacity='1'; setTimeout(()=>toastEl.style.opacity='0',1000);
 }
 
-/* ---- Header buttons ---- */
-document.getElementById("gen").onclick = genDay;
-document.getElementById("shuffle").onclick = shuffleDay;
-document.getElementById("copy").onclick = ()=>{
-  const meals = TYPES.map(t=> textifyMeal(STATE.meals[t])).join("\n\n---\n\n");
-  const boosts = STATE.boosters.length ? `\n\nBoosters:\n- ${STATE.boosters.map(b=>`${b.name} (+${b.calories} kcal)`).join("\n- ")}` : "";
-  const total = `\n\nTOTAL: ${kcalTotal()} kcal`;
-  navigator.clipboard.writeText(meals + boosts + total).then(()=> toast("Day copied"));
-};
-
-/* ---- Boot ---- */
-window.addEventListener("DOMContentLoaded", genDay);
+/* ===== Events & Boot ===== */
+$("#gen").onclick = generate;
+$("#shuffle").onclick = shuffle;
+$("#copy").onclick = copyDay;
+buildTabs();
+window.addEventListener("DOMContentLoaded", generate);
 </script>
 </body>
 </html>
