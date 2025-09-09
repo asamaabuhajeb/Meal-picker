@@ -5,110 +5,74 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Meal Picker — NEO</title>
   <meta name="color-scheme" content="dark">
-  <meta name="description" content="Ultra-fast, single-file meal picker that generates Breakfast/Lunch/Dinner/Snack with images, steps, and copy/share tools.">
   <style>
     :root{
-      --bg:#0a0f1a;
-      --panel:#0f1524cc;
-      --panel-solid:#0f1524;
-      --text:#e9f0ff;
-      --sub:#a7b3d8;
-      --primary:#39ff14;
-      --primary-glow: 0 0 24px #39ff1480, 0 0 48px #39ff1426;
-      --stroke:#1e2a44;
-      --radius:16px;
-      --shadow: 0 8px 32px rgba(0,0,0,.35);
+      --bg:#0a0f1a; --text:#e9f0ff; --sub:#a7b3d8;
+      --primary:#39ff14; --stroke:#1e2a44; --radius:16px;
+      --glow:0 0 24px #39ff1480, 0 0 48px #39ff1426;
     }
     *{box-sizing:border-box}
-    html,body{height:100%}
     body{
-      margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif;
+      margin:0; font-family: ui-sans-serif, -apple-system, Segoe UI, Inter, Roboto, Arial, sans-serif;
       background: radial-gradient(1200px 600px at 10% -10%, #12203b 0%, transparent 60%),
                   radial-gradient(1000px 800px at 110% 20%, #06112a 0%, transparent 60%),
                   var(--bg);
       color:var(--text);
     }
     .topbar{
-      position:sticky; top:0; z-index:50;
-      display:flex; align-items:center; justify-content:space-between;
+      position:sticky; top:0; z-index:50; backdrop-filter: blur(10px);
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
       padding:14px 20px; background:linear-gradient(180deg, #0a0f1acc 60%, transparent);
-      backdrop-filter: blur(10px);
       border-bottom:1px solid #0c1428;
     }
     .brand{display:flex; align-items:center; gap:10px;}
-    .brand h1{font-size:clamp(18px,2.2vw,24px); margin:0; font-weight:700; letter-spacing:.3px}
+    .brand .dot{width:10px; height:10px; border-radius:50%; background:var(--primary); box-shadow:var(--glow)}
+    .brand h1{margin:0; font-size:clamp(18px,2.2vw,24px)}
     .brand em{font-style:normal; color:var(--primary)}
-    .brand .dot{
-      width:10px; height:10px; border-radius:50%;
-      background:var(--primary); box-shadow: var(--primary-glow);
+    .actions{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
+    .btn{
+      background:#0f1c34; color:#cfe1ff; border:1px solid #22345f; border-radius:12px;
+      padding:10px 14px; font-weight:600; letter-spacing:.2px; cursor:pointer;
     }
-    .actions{display:flex; gap:10px; flex-wrap:wrap}
+    .btn.primary{background:linear-gradient(180deg,#0b2a18,#081f12); border-color:#255c3d; box-shadow:var(--glow); color:#d6ffe6}
+    .btn.tiny{padding:8px 10px; font-size:12px}
+    .total{
+      padding:8px 12px; border:1px solid #214a2f; border-radius:999px; background:#0a1712;
+      color:#cffff0; box-shadow:var(--glow); font-weight:700; white-space:nowrap;
+    }
+
     .container{
-      width:min(1200px, 92vw);
-      margin:28px auto 40px auto;
-      display:grid;
-      grid-template-columns: 1fr;
-      gap:18px;
+      width:min(1200px, 92vw); margin:18px auto 40px;
+      display:grid; grid-template-columns:1fr; gap:18px;
     }
-    @media (min-width:700px){ .container{ grid-template-columns: 1fr 1fr; } }
-    @media (min-width:1040px){ .container{ grid-template-columns: 1fr 1fr 1fr; } }
+    @media (min-width:700px){ .container{ grid-template-columns:1fr 1fr; } }
+    @media (min-width:1040px){ .container{ grid-template-columns:1fr 1fr 1fr; } }
+
     .card{
-      background: linear-gradient(180deg, #0c1428aa, #0b1222aa);
-      border:1px solid var(--stroke);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      overflow:hidden;
-      position:relative;
-      transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+      background:linear-gradient(180deg, #0c1428aa, #0b1222aa);
+      border:1px solid var(--stroke); border-radius:var(--radius); overflow:hidden;
+      transition:transform .25s ease, border-color .25s ease;
     }
-    .card::after{
-      content:""; position:absolute; inset:auto -40% 0 -40%; height:1px;
-      background: linear-gradient(90deg, transparent, #39ff1499, transparent);
-      filter: blur(0.6px); opacity:.4;
-    }
-    .card:hover{ transform: translateY(-2px); border-color:#2a3d6b; }
+    .card:hover{ transform:translateY(-2px); border-color:#2a3d6b; }
     .card__head{ padding:18px 18px 8px 18px; }
-    .title{ margin:8px 0 8px 0; font-size:clamp(18px,2vw,22px); }
+    .badge{display:inline-block; padding:6px 10px; border:1px solid #142040; border-radius:999px; background:#071121; color:#9ec2ff; font-size:12px; letter-spacing:.3px}
+    .title{ margin:8px 0; font-size:clamp(18px,2vw,22px) }
     .meta{ display:flex; gap:10px; flex-wrap:wrap; color:var(--sub); font-size:13px; }
-    .badge{
-      display:inline-block; padding:6px 10px; border-radius:999px;
-      background: #071121; border:1px solid #142040; color:#9ec2ff; font-size:12px;
-      letter-spacing:.3px;
-    }
+
     .ingredients, .steps{ padding:6px 18px 14px 18px; }
-    .ingredients h3, .steps h3{ margin:10px 0 10px; font-size:14px; color:#cfe1ff; letter-spacing:.3px; }
-    .ingList{ display:grid; grid-template-columns: 1fr; gap:10px; list-style:none; padding:0; margin:0; }
-    @media (min-width:540px){ .ingList{ grid-template-columns: 1fr 1fr; } }
-    .ingItem{
-      display:flex; gap:10px; align-items:center; background:#0a1327; border:1px solid #142040; border-radius:12px; padding:8px;
-    }
-    .ingItem img{
-      width:48px; height:48px; border-radius:10px; object-fit:cover; border:1px solid #213462;
-    }
-    .ingItem span{ font-size:14px }
+    .ingredients h3, .steps h3{ margin:10px 0; font-size:14px; color:#cfe1ff; letter-spacing:.3px; }
+    .ingList{ list-style:none; margin:0; padding:0; display:grid; grid-template-columns:1fr; gap:10px; }
+    @media (min-width:540px){ .ingList{ grid-template-columns:1fr 1fr; } }
+    .ingItem{ display:flex; gap:10px; align-items:center; background:#0a1327; border:1px solid #142040; border-radius:12px; padding:8px; }
+    .ingIcon{ width:48px; height:48px; border-radius:10px; border:1px solid #213462; overflow:hidden; }
+    .ingIcon svg{ width:48px; height:48px; display:block; }
     .stepList{ margin:0; padding-left:20px; color:#dbe6ff; }
     .stepList li{ margin-bottom:8px; line-height:1.4; }
-    .card__actions{
-      display:flex; gap:10px; padding:14px 18px 18px 18px; flex-wrap:wrap;
-    }
-    .btn{
-      --_bg:#0f1c34; --_fg:#cfe1ff; --_bd:#22345f;
-      background:var(--_bg); color:var(--_fg); border:1px solid var(--_bd);
-      border-radius:10px; padding:10px 14px; font-weight:600; letter-spacing:.2px; cursor:pointer;
-      transition: transform .12s ease, box-shadow .2s ease, border-color .2s ease;
-    }
-    .btn:hover{ transform: translateY(-1px); border-color:#2a4580; }
-    .btn:active{ transform: translateY(0); }
-    .btn.primary{ --_bg: linear-gradient(180deg, #0b2a18, #081f12); --_bd:#255c3d; color:#d6ffe6; box-shadow: var(--primary-glow); }
-    .btn.ghost{ background:transparent; }
-    .btn.tiny{ padding:8px 10px; font-size:12px; }
+    .card__actions{ display:flex; gap:10px; padding:14px 18px 18px; flex-wrap:wrap; }
+
     .foot{
-      width:min(1200px, 92vw); margin:20px auto 60px; color:var(--sub);
+      width:min(1200px,92vw); margin:20px auto 60px; color:var(--sub);
       display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;
-    }
-    .toggle{ display:flex; align-items:center; gap:8px; font-size:14px; }
-    @media (prefers-reduced-motion: reduce){
-      *{ animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important; scroll-behavior:auto !important; }
     }
   </style>
 </head>
@@ -120,15 +84,16 @@
     </div>
     <nav class="actions">
       <button id="generateAll" class="btn primary">Generate Day</button>
-      <button id="shuffleAll" class="btn ghost">Shuffle</button>
-      <button id="copyAll" class="btn ghost">Copy</button>
+      <button id="shuffleAll" class="btn">Shuffle</button>
+      <button id="copyAll" class="btn">Copy</button>
+      <span id="totalCals" class="total">Total: 0 kcal</span>
     </nav>
   </header>
 
   <main class="container" id="app" tabindex="-1"></main>
 
   <footer class="foot">
-    <div>Single-file • Images auto-sourced • Zero dependencies</div>
+    <div>Single-file • SVG icons (no external images) • Zero dependencies</div>
     <label class="toggle">
       <input type="checkbox" id="reduceMotion">
       <span>Reduce motion</span>
@@ -138,7 +103,7 @@
   <template id="mealCardTpl">
     <section class="card">
       <div class="card__head">
-        <div class="badge" data-type="">Meal</div>
+        <div class="badge">Meal</div>
         <h2 class="title"></h2>
         <div class="meta">
           <span class="calories"></span>
@@ -163,8 +128,7 @@
   </template>
 
   <script>
-    const USE_EMOJI_IMAGES = false;
-
+    // -------- Data --------
     const MEAL_DATA = {
       breakfast: [
         {name:"Zaatar & Labneh Wrap",calories:420,time:"10 min",tags:["Vegetarian","Quick"],
@@ -202,57 +166,125 @@
 
     const TYPES = ["breakfast","lunch","dinner","snack"];
     const STATE = { meals:{} };
-    const imgCache = new Map();
-    function imgFor(ingredient){
-      const key = ingredient.toLowerCase().replace(/\s+/g,'-');
-      if(imgCache.has(key)) return imgCache.get(key);
-      let src;
-      if(USE_EMOJI_IMAGES){
-        src="data:image/svg+xml;utf8,"+encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' width='96' height='96'><rect width='100%' height='100%' fill='%230a1327'/><text x='50%' y='60%' text-anchor='middle' font-size='64'>🍽️</text></svg>`);
-      }else{
-        src=`https://source.unsplash.com/featured/?${encodeURIComponent(ingredient)},food`;
-      }
-      imgCache.set(key,src);
-      return src;
+
+    // -------- Helpers --------
+    const qs = (s,el=document)=>el.querySelector(s);
+    function pickRandom(a){return a[Math.floor(Math.random()*a.length)];}
+    function makeMeal(type){const v=pickRandom(MEAL_DATA[type]);return {...v,type};}
+
+    // Robust inline SVG label icon (works everywhere)
+    function svgLabelIcon(text){
+      const t = (text||'').toUpperCase().replace(/[^A-Z0-9]/g,' ').trim().split(/\s+/).slice(0,2).map(s=>s[0]).join('') || 'FO';
+      const colors = ['#0c1933','#0e1f42','#0b1730']; // subtle random bg shades
+      const bg = colors[(t.charCodeAt(0)+t.length)%colors.length];
+      const svg = `
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96">
+          <defs>
+            <linearGradient id="g" x1="0" x2="1" y1="0" y2="1">
+              <stop offset="0" stop-color="${bg}"/>
+              <stop offset="1" stop-color="#081226"/>
+            </linearGradient>
+          </defs>
+          <rect rx="12" ry="12" x="1" y="1" width="94" height="94" fill="url(#g)" stroke="#213462"/>
+          <text x="50" y="58" text-anchor="middle" font-family="ui-sans-serif, -apple-system, Segoe UI, Inter, Roboto" font-size="40" fill="#dbe6ff">${t}</text>
+        </svg>`;
+      const wrap = document.createElement('div');
+      wrap.className = 'ingIcon';
+      wrap.innerHTML = svg.trim();
+      return wrap;
     }
 
-    const qs=(s,e=document)=>e.querySelector(s);
-    function pickRandom(arr){return arr[Math.floor(Math.random()*arr.length)];}
-    function makeMeal(type){const v=pickRandom(MEAL_DATA[type]);return {...v,type};}
-    function renderAll(){
-      const app=qs('#app');app.innerHTML="";
-      TYPES.forEach(t=>{STATE.meals[t]=STATE.meals[t]||makeMeal(t);app.appendChild(renderCard(STATE.meals[t]));});
+    function computeTotal(){
+      return TYPES.reduce((sum,t)=> sum + (STATE.meals[t]?.calories||0), 0);
     }
+    function updateTotal(){
+      qs('#totalCals').textContent = `Total: ${computeTotal()} kcal`;
+    }
+
+    function renderAll(){
+      const app = qs('#app'); app.innerHTML = "";
+      TYPES.forEach(t=>{ STATE.meals[t] = STATE.meals[t] || makeMeal(t); app.appendChild(renderCard(STATE.meals[t])); });
+      updateTotal();
+    }
+
     function renderCard(meal){
-      const tpl=qs('#mealCardTpl').content.cloneNode(true);
-      const card=tpl.querySelector('.card');
-      tpl.querySelector('.badge').textContent=meal.type.toUpperCase();
-      tpl.querySelector('.title').textContent=meal.name;
-      tpl.querySelector('.calories').textContent=`${meal.calories} kcal`;
-      tpl.querySelector('.time').textContent=`⏱ ${meal.time}`;
-      tpl.querySelector('.tags').textContent=meal.tags.join(" • ");
-      const ingList=tpl.querySelector('.ingList');
+      const tpl = qs('#mealCardTpl').content.cloneNode(true);
+      const card = tpl.querySelector('.card');
+
+      tpl.querySelector('.badge').textContent = meal.type.toUpperCase();
+      tpl.querySelector('.title').textContent = meal.name;
+      tpl.querySelector('.calories').textContent = `${meal.calories} kcal`;
+      tpl.querySelector('.time').textContent = `⏱ ${meal.time}`;
+      tpl.querySelector('.tags').textContent = meal.tags.join(" • ");
+
+      const ingList = tpl.querySelector('.ingList');
       meal.ingredients.forEach(ing=>{
-        const li=document.createElement('li');li.className='ingItem';
-        const img=document.createElement('img');img.alt=ing;img.loading='lazy';img.src=imgFor(ing);
-        img.onerror=()=>{img.src="data:image/svg+xml;utf8,"+encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' width='96' height='96'><rect width='100%' height='100%' fill='%230a1327'/><text x='50%' y='60%' text-anchor='middle' font-size='64'>🍽️</text></svg>`);};
-        const span=document.createElement('span');span.textContent=ing;
-        li.append(img,span);ingList.appendChild(li);
+        const li = document.createElement('li'); li.className='ingItem';
+        const icon = svgLabelIcon(ing);
+        const label = document.createElement('span'); label.textContent = ing;
+        li.append(icon, label);
+        ingList.appendChild(li);
       });
-      const stepList=tpl.querySelector('.stepList');
-      meal.steps.forEach(s=>{const li=document.createElement('li');li.textContent=s;stepList.appendChild(li);});
-      tpl.querySelector('[data-action="regenerate"]').onclick=()=>{STATE.meals[meal.type]=makeMeal(meal.type);replaceCard(card,STATE.meals[meal.type]);};
-      tpl.querySelector('[data-action="swap"]').onclick=()=>{const o=TYPES.filter(t=>t!==meal.type);const n=makeMeal(pickRandom(o));STATE.meals[n.type]=n;replaceCard(card,n);};
-      tpl.querySelector('[data-action="copy"]').onclick=()=>{navigator.clipboard.writeText(stringifyMeal(meal)).then(()=>toast("Copied!"));};
+
+      const stepList = tpl.querySelector('.stepList');
+      meal.steps.forEach(s=>{ const li=document.createElement('li'); li.textContent=s; stepList.appendChild(li); });
+
+      // actions
+      tpl.querySelector('[data-action="regenerate"]').onclick = ()=>{
+        STATE.meals[meal.type] = makeMeal(meal.type);
+        replaceCard(card, STATE.meals[meal.type]);
+        updateTotal();
+      };
+      tpl.querySelector('[data-action="swap"]').onclick = ()=>{
+        const other = pickRandom(TYPES.filter(t=>t!==meal.type));
+        const newMeal = makeMeal(other);
+        STATE.meals[other] = newMeal;
+        replaceCard(card, newMeal);
+        updateTotal();
+      };
+      tpl.querySelector('[data-action="copy"]').onclick = ()=>{
+        navigator.clipboard.writeText(stringifyMeal(meal)).then(()=>toast("Copied!"));
+      };
+
       return tpl;
     }
-    function replaceCard(oldCard,newMeal){oldCard.parentElement.replaceChild(renderCard(newMeal),oldCard);}
-    function stringifyMeal(m){return `${m.type.toUpperCase()}: ${m.name}\nCalories: ${m.calories} • Time: ${m.time} • ${m.tags.join(", ")}\n\nIngredients:\n- ${m.ingredients.join("\n- ")}\n\nSteps:\n${m.steps.map((s,i)=>`${i+1}. ${s}`).join("\n")}`;}
-    let toastEl;function toast(msg){if(!toastEl){toastEl=document.createElement('div');Object.assign(toastEl.style,{position:'fixed',bottom:'22px',left:'50%',transform:'translateX(-50%)',background:'#0b1325',color:'#dff6ff',border:'1px solid #25527a',padding:'10px 14px',borderRadius:'10px',boxShadow:'0 8px 30px rgba(0,0,0,.35)',zIndex:'9999'});document.body.appendChild(toastEl);}toastEl.textContent=msg;toastEl.style.opacity='1';setTimeout(()=>toastEl.style.opacity='0',1200);}
-    qs('#generateAll').onclick=()=>{TYPES.forEach(t=>STATE.meals[t]=makeMeal(t));renderAll();};
-    qs('#shuffleAll').onclick=()=>{TYPES.forEach(t=>STATE.meals[t]=makeMeal(t));renderAll();};
-    qs('#copyAll').onclick=()=>{navigator.clipboard.writeText(TYPES.map(t=>stringifyMeal(STATE.meals[t])).join("\n\n---\n\n")).then(()=>toast("All meals copied!"));};
-    window.addEventListener('DOMContentLoaded',()=>{TYPES.forEach(t=>STATE.meals[t]=makeMeal(t));renderAll();});
+
+    function replaceCard(oldCard, newMeal){
+      oldCard.parentElement.replaceChild(renderCard(newMeal), oldCard);
+    }
+
+    function stringifyMeal(m){
+      return `${m.type.toUpperCase()}: ${m.name}
+Calories: ${m.calories} • Time: ${m.time} • ${m.tags.join(", ")}
+
+Ingredients:
+- ${m.ingredients.join("\n- ")}
+
+Steps:
+${m.steps.map((s,i)=>`${i+1}. ${s}`).join("\n")}`;
+    }
+
+    // tiny toast
+    let toastEl;
+    function toast(msg){
+      if(!toastEl){
+        toastEl = document.createElement('div');
+        Object.assign(toastEl.style,{position:'fixed',bottom:'22px',left:'50%',transform:'translateX(-50%)',background:'#0b1325',color:'#dff6ff',border:'1px solid #25527a',padding:'10px 14px',borderRadius:'10px',boxShadow:'0 8px 30px rgba(0,0,0,.35)',zIndex:'9999'});
+        document.body.appendChild(toastEl);
+      }
+      toastEl.textContent = msg; toastEl.style.opacity='1'; setTimeout(()=>toastEl.style.opacity='0',1200);
+    }
+
+    // top controls
+    qs('#generateAll').onclick = ()=>{ TYPES.forEach(t=> STATE.meals[t] = makeMeal(t)); renderAll(); };
+    qs('#shuffleAll').onclick  = ()=>{ TYPES.forEach(t=> STATE.meals[t] = makeMeal(t)); renderAll(); };
+    qs('#copyAll').onclick     = ()=>{ navigator.clipboard.writeText(TYPES.map(t=> stringifyMeal(STATE.meals[t])).join("\n\n---\n\n")).then(()=>toast("All meals copied!")); };
+
+    // boot
+    window.addEventListener('DOMContentLoaded', ()=>{
+      TYPES.forEach(t=> STATE.meals[t] = makeMeal(t));
+      renderAll();
+    });
   </script>
 </body>
 </html>
