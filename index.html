@@ -3,150 +3,142 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
-<title>Meal Maker — Pro Mobile</title>
-<meta name="color-scheme" content="dark light"/>
+<title>Meal Maker — Pro</title>
+<meta name="color-scheme" content="dark"/>
 <meta name="theme-color" content="#0c0c0c"/>
 <style>
   :root{
-    --bg:#0c0c0c; --panel:#111213; --panel-2:#161718; --line:#222427;
-    --text:#f3f4f6; --muted:#b6bcc5; --accent:#e9ecef; --chip:#1b1d1f;
-    --radius:16px; --radius-sm:12px; --maxw:480px;
+    --bg:#0c0c0c; --panel:#131415; --panel2:#17191b; --line:#24272b;
+    --text:#f3f4f6; --muted:#b7bcc4; --accent:#ffd76a; --chip:#1a1c1f;
+    --radius:18px; --rsm:14px; --maxw:480px;
   }
   *{box-sizing:border-box}
   html,body{height:100%}
   body{
     margin:0; background:var(--bg); color:var(--text);
-    font-family: ui-sans-serif,-apple-system,system-ui,"SF Pro Text",Inter,Roboto,Segoe UI,Arial,sans-serif;
+    font-family:ui-sans-serif,-apple-system,system-ui,"SF Pro Text",Inter,Roboto,Segoe UI,Arial,sans-serif;
     -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
   }
 
-  /* Header */
-  .topbar{position:sticky;top:0;z-index:50;border-bottom:1px solid var(--line);
-    background:linear-gradient(180deg,#0c0c0c 75%,#0c0c0c00);backdrop-filter:blur(6px)}
-  .wrap{max-width:var(--maxw);margin:0 auto;padding:12px 14px;display:flex;gap:12px;align-items:center;justify-content:space-between}
-  .brand{display:flex;gap:10px;align-items:center}
-  .dot{width:8px;height:8px;background:#48e58a;border-radius:50%}
-  .title{margin:0;line-height:1.15}
-  .title strong{display:block;font-size:18px}
-  .title small{display:block;color:var(--muted)}
-  .controls{display:flex;gap:8px;align-items:center}
-  .btn{appearance:none;border:1px solid var(--line);background:#161718;color:var(--text);
-    padding:10px 12px;border-radius:12px;font-weight:600;font-size:14px;min-height:44px}
-  .btn.primary{background:#1b1d1f}
-  .pill{border:1px solid var(--line);background:#151617;color:#fff;padding:8px 12px;border-radius:999px;font-weight:700;font-size:14px}
-
-  /* Progress (kcal ring) */
-  .ring{display:flex;align-items:center;gap:10px;border:1px solid var(--line);background:#151617;border-radius:999px;padding:8px 12px}
-  .ring-arc{--pct:0; width:28px;height:28px;border-radius:50%;
-    background:
-      radial-gradient(closest-side,#151617 67%,transparent 70% 100%),
-      conic-gradient(#e8e8e8 var(--pct), #2b2d31 0);
+  /* Header – matches design 2 tone */
+  .header{position:sticky;top:0;z-index:50;border-bottom:1px solid var(--line);
+    background:linear-gradient(180deg,#0c0c0c 80%,#0c0c0c00);backdrop-filter:blur(6px)}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .greet{display:flex;align-items:center;gap:10px}
+  .avatar{width:34px;height:34px;border-radius:50%;background:#202328;border:1px solid var(--line)}
+  .hello{margin:0;line-height:1.1}
+  .hello b{display:block;font-size:18px}
+  .hello small{display:block;color:var(--muted)}
+  .controls{display:flex;gap:8px}
+  .btn{
+    appearance:none;border:1px solid var(--line);background:#16171a;color:#fff;
+    padding:10px 12px;border-radius:12px;font-weight:700;font-size:14px;min-height:44px;
   }
-  .ring .label{font-weight:700}
 
-  main{max-width:var(--maxw);margin:0 auto;padding:12px 14px 80px}
+  /* Summary row (kcal + tabs) */
+  .summary{max-width:var(--maxw);margin:0 auto;padding:0 16px 10px;display:flex;gap:10px;align-items:center}
+  .kcal{display:flex;align-items:center;gap:10px;background:#15171a;border:1px solid var(--line);border-radius:999px;padding:8px 12px}
+  .k-icon{width:30px;height:30px;border-radius:50%;background:
+    radial-gradient(closest-side,#15171a 68%,transparent 70% 100%),
+    conic-gradient(#ffd76a var(--deg,0deg), #2b2e33 0)}
+  .k-text{font-weight:800}
+  .tabs{display:flex;gap:8px;overflow:auto}
+  .chip{white-space:nowrap;background:var(--chip);border:1px solid var(--line);border-radius:999px;color:#e7eaee;padding:8px 12px;font-weight:700;font-size:13px}
+  .chip.active{background:#1e2125}
 
-  /* Tabs (meal sections) */
-  .tabs{display:flex;gap:8px;overflow:auto;padding:6px 0 10px}
-  .chip{white-space:nowrap;border:1px solid var(--line);background:var(--chip);color:#e6e7ea;padding:8px 12px;border-radius:999px;font-weight:600;font-size:13px}
-  .chip.active{background:#1f2225}
+  main{max-width:var(--maxw);margin:0 auto;padding:10px 16px 80px}
 
-  /* Card */
+  /* Card list like design 2 */
   .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;margin-bottom:14px}
-  .head{display:flex;align-items:center;gap:12px;padding:14px;border-bottom:1px solid var(--line)}
-  .mealpic{width:64px;height:64px;border-radius:12px;object-fit:cover;background:#0e0f10;border:1px solid #24272b}
-  .h2{margin:0;font-size:18px;font-weight:800}
-  .meta{display:flex;gap:10px;color:var(--muted);font-size:13px;padding:10px 14px 8px}
+  .row{display:flex;gap:12px;align-items:center;padding:14px}
+  .thumb-hero{width:86px;height:86px;border-radius:16px;object-fit:cover;background:#0f1012;border:1px solid #262a2f;margin-left:auto}
+  .title{margin:0 0 6px;font-size:18px;font-weight:800}
+  .meta{display:flex;gap:10px;color:var(--muted);font-size:13px}
+  .pill{display:inline-flex;align-items:center;gap:6px;background:#202328;border:1px solid var(--line);color:#e7eaee;border-radius:999px;padding:6px 10px;font-weight:700;font-size:12px}
 
-  /* Ingredients row (horizontal) */
-  .block{padding:10px 14px}
-  .block h3{margin:0 0 10px;font-size:14px;color:#e8eaee}
-  .ingRow{display:flex;gap:10px;overflow:auto;padding-bottom:2px}
-  .chip-ing{display:flex;align-items:center;gap:8px;background:var(--panel-2);border:1px solid var(--line);border-radius:999px;padding:6px 8px}
-  .ingThumb{width:32px;height:32px;border-radius:999px;object-fit:cover;background:#0f1012;border:1px solid #262a2f}
+  /* Section block */
+  .blk{padding:0 14px 14px}
+  .h3{margin:0 0 10px;color:#e7eaee;font-size:14px}
+  .ingRow{display:flex;gap:10px;overflow:auto}
+  .ingChip{display:flex;align-items:center;gap:8px;background:var(--panel2);border:1px solid var(--line);border-radius:999px;padding:6px 10px}
+  .ingImg{width:32px;height:32px;border-radius:50%;object-fit:cover;background:#0f1012;border:1px solid #272b31}
 
-  /* Steps */
-  .stepList{margin:0;padding-left:18px;color:#e8eaee}
-  .stepList li{margin:0 0 8px}
+  .steps{margin:0;padding-left:20px;color:#e9ebee}
+  .steps li{margin:0 0 8px}
 
-  /* Actions */
-  .row{display:flex;gap:8px;padding:12px 14px;border-top:1px solid var(--line)}
-  .btn.sm{font-size:12px;padding:8px 10px;min-height:36px}
+  .actions{display:flex;gap:8px;padding:12px 14px;border-top:1px solid var(--line)}
+  .btn.sm{padding:8px 10px;font-size:12px;min-height:36px}
 
-  /* Boosters card */
+  /* Boosters (only if needed) */
   .muted{color:#cfd3d9;font-size:13px;margin:0 0 8px}
   .boostList{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
-  .boostItem{display:flex;gap:10px;align-items:center;background:var(--panel-2);border:1px solid var(--line);border-radius:12px;padding:8px}
-  .boostThumb{width:42px;height:42px;border-radius:10px;object-fit:cover;background:#0f1012;border:1px solid #24272b}
+  .boostItem{display:flex;gap:10px;align-items:center;background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:8px}
+  .boostImg{width:42px;height:42px;border-radius:10px;object-fit:cover;background:#0f1012;border:1px solid #24272b}
 
-  /* Bottom nav (visual only) */
+  /* Fake bottom nav (visual) */
   .nav{position:sticky;bottom:0;z-index:40;background:#0c0c0c;border-top:1px solid var(--line)}
-  .navw{max-width:var(--maxw);margin:0 auto;padding:10px 14px;display:flex;gap:10px;justify-content:space-between}
-  .nav .i{width:34px;height:34px;border-radius:10px;background:#141517;border:1px solid var(--line)}
+  .navw{max-width:var(--maxw);margin:0 auto;padding:10px 16px;display:flex;gap:10px;justify-content:space-between}
+  .nav .i{width:34px;height:34px;border-radius:10px;background:#14161a;border:1px solid var(--line)}
 
-  /* Safe area hugs */
-  @supports(padding:max(0px)){
-    .navw{padding-bottom:calc(10px + env(safe-area-inset-bottom))}
-  }
+  @supports(padding:max(0px)){ .navw{padding-bottom:calc(10px + env(safe-area-inset-bottom))} }
 </style>
 </head>
 <body>
-  <header class="topbar">
+  <!-- Header -->
+  <header class="header">
     <div class="wrap">
-      <div class="brand">
-        <span class="dot"></span>
-        <p class="title">
-          <strong>Meal Maker</strong>
-          <small id="today"></small>
-        </p>
+      <div class="greet">
+        <div class="avatar"></div>
+        <p class="hello"><b>Hi there</b><small id="today"></small></p>
       </div>
-      <div class="controls" id="controls">
-        <button id="gen" class="btn primary">Generate</button>
+      <div class="controls">
+        <button id="gen" class="btn">Generate</button>
         <button id="shuffle" class="btn">Shuffle</button>
         <button id="copy" class="btn">Copy</button>
       </div>
     </div>
-    <div class="wrap" style="padding-top:0">
-      <div class="ring" id="ring">
-        <div class="ring-arc" id="ringArc" aria-hidden="true"></div>
-        <div class="label" id="totalLabel">Total: 0 kcal</div>
+    <div class="summary">
+      <div class="kcal">
+        <div class="k-icon" id="kIcon"></div>
+        <div class="k-text" id="kText">0 kcal</div>
       </div>
-      <div class="tabs" id="tabs" aria-label="Meals tabs"></div>
+      <nav class="tabs" id="tabs"></nav>
     </div>
   </header>
 
+  <!-- Content -->
   <main id="app" tabindex="-1"></main>
 
   <footer class="nav" aria-hidden="true">
     <div class="navw"><div class="i"></div><div class="i"></div><div class="i"></div><div class="i"></div></div>
   </footer>
 
-  <!-- Meal card template -->
+  <!-- Templates -->
   <template id="mealTpl">
     <section class="card">
-      <div class="head">
-        <img class="mealpic" alt="" />
-        <div>
-          <h2 class="h2"></h2>
+      <div class="row">
+        <div class="info">
+          <h2 class="title"></h2>
           <div class="meta">
-            <span class="cal"></span>
-            <span class="time"></span>
-            <span class="tags"></span>
+            <span class="pill cal"></span>
+            <span class="pill time"></span>
+            <span class="pill tags"></span>
           </div>
         </div>
+        <img class="thumb-hero" alt=""/>
       </div>
 
-      <div class="block">
-        <h3>Ingredients</h3>
+      <div class="blk">
+        <h3 class="h3">Ingredients</h3>
         <div class="ingRow"></div>
       </div>
 
-      <div class="block">
-        <h3>Steps</h3>
-        <ol class="stepList"></ol>
+      <div class="blk">
+        <h3 class="h3">Steps</h3>
+        <ol class="steps"></ol>
       </div>
 
-      <div class="row">
+      <div class="actions">
         <button class="btn sm" data-act="regenerate">Regenerate</button>
         <button class="btn sm" data-act="swap">Swap</button>
         <button class="btn sm" data-act="copy">Copy</button>
@@ -154,11 +146,10 @@
     </section>
   </template>
 
-  <!-- Boosters -->
   <template id="boostTpl">
     <section class="card">
-      <div class="head"><h2 class="h2" style="margin-left:2px">Calorie Boosters</h2></div>
-      <div class="block">
+      <div class="row"><h2 class="title" style="margin:0">Calorie Boosters</h2></div>
+      <div class="blk">
         <p class="muted">Added automatically to reach your daily goal (≥ 2500 kcal).</p>
         <ul class="boostList"></ul>
       </div>
@@ -166,23 +157,70 @@
   </template>
 
 <script>
-/* ===== Utilities ===== */
+/* ============== UTILITIES ============== */
 const $ = (s,el=document)=>el.querySelector(s);
 const $$ = (s,el=document)=>Array.from(el.querySelectorAll(s));
 const pick = arr => arr[Math.floor(Math.random()*arr.length)];
 const clone = id => $(id).content.cloneNode(true);
-const today = new Date();
-$("#today").textContent = today.toLocaleDateString(undefined,{weekday:'long', day:'numeric', month:'long'});
+$("#today").textContent = new Date().toLocaleDateString(undefined,{weekday:'long', day:'numeric', month:'long'});
 
-/* ===== Data (curated) ===== */
+/* ============== ROBUST IMAGES (CDN MAP) ============== */
+/* Direct Unsplash CDN links for reliability on iOS (no API key).
+   Add more keys anytime; unknown keys use a safe generic plate image. */
+const IMG = {
+  eggs:"https://images.unsplash.com/photo-1524592094714-0f0654e20314?auto=format&fit=crop&w=256&q=60",
+  halloumi:"https://images.unsplash.com/photo-1546549039-3eaca75b0f2b?auto=format&fit=crop&w=256&q=60",
+  cheese:"https://images.unsplash.com/photo-1486299267070-83823f5448dd?auto=format&fit=crop&w=256&q=60",
+  olives:"https://images.unsplash.com/photo-1515543237350-b3eea1ec8082?auto=format&fit=crop&w=256&q=60",
+  "cherry tomatoes":"https://images.unsplash.com/photo-1546549039-175c8b7bc3a2?auto=format&fit=crop&w=256&q=60",
+  tomato:"https://images.unsplash.com/photo-1541963463532-d68292c34b19?auto=format&fit=crop&w=256&q=60",
+  cucumber:"https://images.unsplash.com/photo-1568584711075-3d021c7e9187?auto=format&fit=crop&w=256&q=60",
+  mint:"https://images.unsplash.com/photo-1528825871115-3581a5387919?auto=format&fit=crop&w=256&q=60",
+  "olive oil":"https://images.unsplash.com/photo-1505575967455-40e256f73376?auto=format&fit=crop&w=256&q=60",
+  flatbread:"https://images.unsplash.com/photo-1625944520613-2a6d1d1a6e9a?auto=format&fit=crop&w=256&q=60",
+  labneh:"https://images.unsplash.com/photo-1604908554168-3d1e8f302ff7?auto=format&fit=crop&w=256&q=60",
+  zaatar:"https://images.unsplash.com/photo-1505577058444-a3dab90d4253?auto=format&fit=crop&w=256&q=60",
+  "chicken breast":"https://images.unsplash.com/photo-1510627498534-cf7e9002facc?auto=format&fit=crop&w=256&q=60",
+  rice:"https://images.unsplash.com/photo-1604908554131-6a1e9dfcf0ac?auto=format&fit=crop&w=256&q=60",
+  cabbage:"https://images.unsplash.com/photo-1604908554185-1c3f9d4b4f81?auto=format&fit=crop&w=256&q=60",
+  "garlic sauce":"https://images.unsplash.com/photo-1505575967455-40e256f73376?auto=format&fit=crop&w=256&q=60",
+  pasta:"https://images.unsplash.com/photo-1523986371872-9d3ba2e2f642?auto=format&fit=crop&w=256&q=60",
+  tuna:"https://images.unsplash.com/photo-1553621042-f6e147245754?auto=format&fit=crop&w=256&q=60",
+  "sweet corn":"https://images.unsplash.com/photo-1506806732259-39c2d0268443?auto=format&fit=crop&w=256&q=60",
+  lemon:"https://images.unsplash.com/photo-1497032205916-ac775f0649ae?auto=format&fit=crop&w=256&q=60",
+  parsley:"https://images.unsplash.com/photo-1506807803488-8eafc15316c1?auto=format&fit=crop&w=256&q=60",
+  kofta:"https://images.unsplash.com/photo-1604908177079-2e2d9b0e0fda?auto=format&fit=crop&w=256&q=60",
+  bulgur:"https://images.unsplash.com/photo-1526318472351-c75fcf070305?auto=format&fit=crop&w=256&q=60",
+  yogurt:"https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=256&q=60",
+  salmon:"https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=256&q=60",
+  potatoes:"https://images.unsplash.com/photo-1518977676601-b53f82aba655?auto=format&fit=crop&w=256&q=60",
+  broccoli:"https://images.unsplash.com/photo-1471193945509-9ad0617afabf?auto=format&fit=crop&w=256&q=60",
+  garlic:"https://images.unsplash.com/photo-1511690078903-71dc5a49f5e4?auto=format&fit=crop&w=256&q=60",
+  "medjool dates":"https://images.unsplash.com/photo-1615485737653-9f6d6ec1345f?auto=format&fit=crop&w=256&q=60",
+  "peanut butter":"https://images.unsplash.com/photo-1526318472351-c75fcf070305?auto=format&fit=crop&w=256&q=60",
+  walnuts:"https://images.unsplash.com/photo-1515879218367-8466d910aaa4?auto=format&fit=crop&w=256&q=60",
+  "greek yogurt":"https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=256&q=60",
+  honey:"https://images.unsplash.com/photo-1505577058444-a3dab90d4253?auto=format&fit=crop&w=256&q=60",
+  banana:"https://images.unsplash.com/photo-1574226516831-e1dff420e43e?auto=format&fit=crop&w=256&q=60",
+  oats:"https://images.unsplash.com/photo-1517677208171-0bc6725a3e60?auto=format&fit=crop&w=256&q=60",
+  avocado:"https://images.unsplash.com/photo-1490474418585-ba9bad8fd0ea?auto=format&fit=crop&w=256&q=60",
+  nuts:"https://images.unsplash.com/photo-1515879218367-8466d910aaa4?auto=format&fit=crop&w=256&q=60",
+  "dark chocolate":"https://images.unsplash.com/photo-1470337458703-46ad1756a187?auto=format&fit=crop&w=256&q=60",
+  granola:"https://images.unsplash.com/photo-1526318472351-c75fcf070305?auto=format&fit=crop&w=256&q=60",
+  pita:"https://images.unsplash.com/photo-1625944520613-2a6d1d1a6e9a?auto=format&fit=crop&w=256&q=60"
+};
+const GENERIC_IMG="https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=256&q=60"; // plate shot
+function imgFor(name){ return IMG[name?.toLowerCase?.()] || GENERIC_IMG; }
+
+/* ============== DATA ============== */
 const MEAL_DATA = {
   breakfast: [
     {name:"Zaatar & Labneh Wrap",calories:420,time:"10 min",tags:["Vegetarian","Quick"],
      ingredients:["flatbread","labneh","zaatar","olive oil","cucumber","tomato","mint"],
-     steps:["Spread labneh on warm flatbread.","Sprinkle zaatar and drizzle olive oil.","Add cucumber, tomato, mint; roll tightly."]},
+     steps:["Spread labneh on warm flatbread.","Sprinkle zaatar and drizzle olive oil.","Add cucumber, tomato, mint; roll."]},
     {name:"Egg & Halloumi Plate",calories:480,time:"12 min",tags:["High-protein"],
      ingredients:["eggs","halloumi","olives","cherry tomatoes","olive oil"],
-     steps:["Sear halloumi until golden.","Fry or scramble eggs.","Plate with olives and tomatoes; drizzle olive oil."]}
+     steps:["Sear halloumi until golden.","Fry or scramble eggs.","Plate with olives & tomatoes; drizzle oil."]}
   ],
   lunch: [
     {name:"Chicken Shawarma Bowl",calories:650,time:"25 min",tags:["Protein","Prep"],
@@ -190,15 +228,15 @@ const MEAL_DATA = {
      steps:["Season chicken; pan-sear.","Serve over rice with shredded cabbage.","Drizzle garlic sauce."]},
     {name:"Tuna Pasta Salad",calories:560,time:"20 min",tags:["Cold","Quick"],
      ingredients:["pasta","tuna","sweet corn","olive oil","lemon","parsley"],
-     steps:["Boil pasta; cool.","Mix with tuna, corn, parsley.","Dress with oil and lemon."]}
+     steps:["Boil pasta; cool.","Mix with tuna, corn, parsley.","Dress with oil & lemon."]}
   ],
   dinner: [
     {name:"Grilled Kofta with Bulgur",calories:700,time:"30 min",tags:["Balanced"],
      ingredients:["kofta","bulgur","tomato","yogurt","parsley"],
-     steps:["Grill kofta.","Simmer bulgur until fluffy.","Serve with chopped tomato, parsley, and yogurt."]},
+     steps:["Grill kofta.","Simmer bulgur until fluffy.","Serve with chopped tomato, parsley & yogurt."]},
     {name:"Salmon & Veg Traybake",calories:590,time:"25 min",tags:["Omega-3","One-pan"],
      ingredients:["salmon","potatoes","broccoli","olive oil","lemon","garlic"],
-     steps:["Roast potatoes 10 min.","Add salmon and broccoli; season; roast 12–15 min."]}
+     steps:["Roast potatoes 10 min.","Add salmon & broccoli; season; roast 12–15 min."]}
   ],
   snack: [
     {name:"Dates & Peanut Butter",calories:260,time:"2 min",tags:["Quick","Sweet"],
@@ -209,7 +247,6 @@ const MEAL_DATA = {
      steps:["Layer yogurt with banana; drizzle honey; sprinkle oats."]}
   ]
 };
-
 const BOOSTERS = [
   {name:"extra olive oil (1 tbsp)",calories:120},
   {name:"mixed nuts (30 g)",calories:170},
@@ -218,146 +255,96 @@ const BOOSTERS = [
   {name:"avocado (1/2)",calories:120},
   {name:"rice (1 cup cooked)",calories:200},
   {name:"dark chocolate (30 g)",calories:170},
-  {name:"granola (40 g)",calories:180},
+  {name:"granola (40 g)",calories:180}
 ];
 
-/* ===== Images (real photos w/ fallback) ===== */
-function photoFor(q){
-  return `https://source.unsplash.com/featured/?${encodeURIComponent(q+', food, isolated')}`;
-}
-const PLACEHOLDER =
-  "data:image/svg+xml;utf8,"+encodeURIComponent("<svg xmlns='http://www.w3.org/2000/svg' width='96' height='96'><rect width='96' height='96' rx='12' ry='12' fill='%23121416' stroke='%2325292f'/><circle cx='48' cy='36' r='16' fill='%23232a31'/><rect x='20' y='58' width='56' height='10' rx='5' fill='%23232a31'/></svg>");
+/* ============== STATE ============== */
+const TYPES=["breakfast","lunch","dinner","snack"];
+const STATE={meals:{},boosters:[]};
 
-function makeImg(cls,src,alt){
-  const img = new Image();
-  img.className = cls;
-  img.loading = "lazy";
-  img.decoding = "async";
-  img.referrerPolicy = "no-referrer";
-  img.src = src;
-  img.alt = alt || "";
-  img.onerror = ()=>{ img.src = PLACEHOLDER; };
-  return img;
-}
-
-/* ===== App state ===== */
-const TYPES = ["breakfast","lunch","dinner","snack"];
-const STATE = { meals:{}, boosters:[] };
-
-function makeMeal(type){
-  const v = pick(MEAL_DATA[type]);
-  return { type, name:v.name, calories:v.calories, time:v.time, tags:[...v.tags], ingredients:[...v.ingredients], steps:[...v.steps] };
-}
-function kcalMeals(){ return TYPES.reduce((s,t)=> s + (STATE.meals[t]?.calories||0), 0); }
-function kcalBoosters(){ return STATE.boosters.reduce((s,b)=> s + b.calories, 0); }
+function makeMeal(type){ const v=pick(MEAL_DATA[type]); return {type, ...v, ingredients:[...v.ingredients], tags:[...v.tags], steps:[...v.steps]}; }
+function kcalMeals(){ return TYPES.reduce((s,t)=>s+(STATE.meals[t]?.calories||0),0); }
+function kcalBoosters(){ return STATE.boosters.reduce((s,b)=>s+b.calories,0); }
 function kcalTotal(){ return kcalMeals()+kcalBoosters(); }
 
-/* ===== UI: tabs ===== */
+/* ============== UI: TABS & RING ============== */
 function buildTabs(){
-  const bar = $("#tabs"); bar.innerHTML = "";
+  const bar=$("#tabs"); bar.innerHTML="";
   TYPES.forEach((t,i)=>{
-    const a = document.createElement("button");
-    a.className = "chip"+(i===0?" active":"");
-    a.textContent = t[0].toUpperCase()+t.slice(1);
-    a.onclick = ()=>{
-      $$(".chip",bar).forEach(c=>c.classList.remove("active"));
-      a.classList.add("active");
-      const target = document.getElementById(`meal-${t}`);
-      if(target){ target.scrollIntoView({behavior:"smooth",block:"start"}); }
+    const b=document.createElement("button");
+    b.className="chip"+(i===0?" active":"");
+    b.textContent=t[0].toUpperCase()+t.slice(1);
+    b.onclick=()=>{
+      $$(".chip",bar).forEach(x=>x.classList.remove("active")); b.classList.add("active");
+      const card=document.getElementById("card-"+t); if(card) card.scrollIntoView({behavior:"smooth",block:"start"});
     };
-    bar.appendChild(a);
+    bar.appendChild(b);
   });
 }
+function updateRing(){
+  const total=kcalTotal();
+  $("#kText").textContent=`${total} kcal`;
+  $("#kIcon").style.setProperty("--deg", Math.min(total/2500,1)*360+"deg");
+}
 
-/* ===== Renderers ===== */
+/* ============== RENDERERS ============== */
 function renderMealCard(meal){
-  const tpl = clone("#mealTpl");
-  const card = tpl.querySelector("section");
-  card.id = `meal-${meal.type}`;
+  const tpl=clone("#mealTpl");
+  const card=tpl.querySelector("section"); card.id="card-"+meal.type;
+  tpl.querySelector(".title").textContent=meal.name;
+  tpl.querySelector(".cal").textContent=`${meal.calories} kcal`;
+  tpl.querySelector(".time").textContent=`⏱ ${meal.time}`;
+  tpl.querySelector(".tags").textContent=meal.tags.join(" • ");
 
-  const mealPic = tpl.querySelector(".mealpic");
-  // Use the first ingredient as hero query; fallback to meal name
-  const heroQuery = meal.ingredients[0] || meal.name;
-  const hero = makeImg("mealpic", photoFor(heroQuery), meal.name);
-  mealPic.replaceWith(hero);
+  const hero=tpl.querySelector(".thumb-hero");
+  hero.src=imgFor(meal.ingredients[0]||meal.name); hero.alt=meal.name; hero.loading="lazy"; hero.decoding="async"; hero.referrerPolicy="no-referrer";
 
-  tpl.querySelector(".h2").textContent = meal.name;
-  tpl.querySelector(".cal").textContent = `${meal.calories} kcal`;
-  tpl.querySelector(".time").textContent = `⏱ ${meal.time}`;
-  tpl.querySelector(".tags").textContent = meal.tags.join(" • ");
-
-  const ingRow = tpl.querySelector(".ingRow");
+  const ingRow=tpl.querySelector(".ingRow");
   meal.ingredients.forEach(ing=>{
-    const chip = document.createElement("div"); chip.className = "chip-ing";
-    chip.appendChild(makeImg("ingThumb", photoFor(ing), ing));
-    const label = document.createElement("span"); label.textContent = ing;
-    chip.appendChild(label);
-    ingRow.appendChild(chip);
+    const chip=document.createElement("div"); chip.className="ingChip";
+    const img=new Image(); img.className="ingImg"; img.loading="lazy"; img.decoding="async"; img.referrerPolicy="no-referrer"; img.src=imgFor(ing); img.alt=ing;
+    const label=document.createElement("span"); label.textContent=ing;
+    chip.append(img,label); ingRow.appendChild(chip);
   });
 
-  const steps = tpl.querySelector(".stepList");
-  meal.steps.forEach(s=>{ const li = document.createElement("li"); li.textContent = s; steps.appendChild(li); });
+  const steps=tpl.querySelector(".steps");
+  meal.steps.forEach(s=>{ const li=document.createElement("li"); li.textContent=s; steps.appendChild(li); });
 
-  // Actions
-  tpl.querySelector('[data-act="regenerate"]').onclick = ()=>{ STATE.meals[meal.type] = makeMeal(meal.type); draw(); };
-  tpl.querySelector('[data-act="swap"]').onclick = ()=>{
-    const other = pick(TYPES.filter(t=>t!==meal.type)); STATE.meals[other] = makeMeal(other); delete STATE.meals[meal.type]; draw();
-  };
-  tpl.querySelector('[data-act="copy"]').onclick = ()=>{
-    navigator.clipboard.writeText(textifyMeal(meal)).then(()=>toast("Copied meal"));
-  };
+  tpl.querySelector('[data-act="regenerate"]').onclick=()=>{ STATE.meals[meal.type]=makeMeal(meal.type); draw(); };
+  tpl.querySelector('[data-act="swap"]').onclick=()=>{ const other=pick(TYPES.filter(x=>x!==meal.type)); STATE.meals[other]=makeMeal(other); delete STATE.meals[meal.type]; draw(); };
+  tpl.querySelector('[data-act="copy"]').onclick=()=>{ navigator.clipboard.writeText(textifyMeal(meal)); };
 
   return tpl;
 }
-
 function renderBoosters(){
   if(!STATE.boosters.length) return document.createDocumentFragment();
-  const tpl = clone("#boostTpl");
-  const ul = tpl.querySelector(".boostList");
+  const tpl=clone("#boostTpl");
+  const ul=tpl.querySelector(".boostList");
   STATE.boosters.forEach(b=>{
-    const li = document.createElement("li"); li.className = "boostItem";
-    li.appendChild(makeImg("boostThumb", photoFor(b.name), b.name));
-    const span = document.createElement("span"); span.textContent = `${b.name}  +${b.calories} kcal`;
-    li.appendChild(span);
-    ul.appendChild(li);
+    const li=document.createElement("li"); li.className="boostItem";
+    const img=new Image(); img.className="boostImg"; img.src=imgFor(b.name); img.loading="lazy"; img.decoding="async"; img.referrerPolicy="no-referrer"; img.alt=b.name;
+    const span=document.createElement("span"); span.textContent=`${b.name}  +${b.calories} kcal`;
+    li.append(img,span); ul.appendChild(li);
   });
   return tpl;
 }
 
-/* ===== Calories ring & total ===== */
-function updateTotalsUI(){
-  const total = kcalTotal();
-  const pct = Math.min(total/2500, 1); // ring to goal
-  $("#totalLabel").textContent = `Total: ${total} kcal`;
-  $("#ringArc").style.setProperty("--pct", (pct*360)+"deg");
-}
-
-/* ===== Goal logic (≥ 2500 kcal) ===== */
+/* ============== GOAL LOGIC (≥ 2500 kcal) ============== */
 function ensureFloor(target=2500){
-  STATE.boosters = [];
-  let need = target - kcalMeals();
-  let i = 0;
-  while(need > 0 && i < 20){
-    const b = BOOSTERS[i % BOOSTERS.length];
-    STATE.boosters.push(b);
-    need -= b.calories; i++;
-  }
+  STATE.boosters=[]; let need=target-kcalMeals(); let i=0;
+  while(need>0 && i<20){ const b=BOOSTERS[i%BOOSTERS.length]; STATE.boosters.push(b); need-=b.calories; i++; }
 }
 
-/* ===== Draw / Generate ===== */
+/* ============== DRAW / ACTIONS ============== */
 function draw(){
-  const app = $("#app"); app.innerHTML = "";
+  const app=$("#app"); app.innerHTML="";
   ensureFloor(2500);
-
   TYPES.forEach(t=>{ if(STATE.meals[t]) app.appendChild(renderMealCard(STATE.meals[t])); });
   app.appendChild(renderBoosters());
-
-  updateTotalsUI();
+  updateRing();
 }
-function generate(){ TYPES.forEach(t=> STATE.meals[t] = makeMeal(t)); draw(); }
+function generate(){ TYPES.forEach(t=> STATE.meals[t]=makeMeal(t)); draw(); }
 function shuffle(){ generate(); }
-
-/* ===== Text export ===== */
 function textifyMeal(m){
   return `${m.type.toUpperCase()}: ${m.name}
 Calories: ${m.calories} • Time: ${m.time} • ${m.tags.join(", ")}
@@ -369,28 +356,16 @@ Steps:
 ${m.steps.map((s,i)=>`${i+1}. ${s}`).join("\n")}`;
 }
 function copyDay(){
-  const meals = TYPES.map(t=> STATE.meals[t] ? textifyMeal(STATE.meals[t]) : "").join("\n\n---\n\n");
-  const boosts = STATE.boosters.length ? `\n\nBoosters:\n- ${STATE.boosters.map(b=>`${b.name} (+${b.calories} kcal)`).join("\n- ")}` : "";
-  const total = `\n\nTOTAL: ${kcalTotal()} kcal`;
-  navigator.clipboard.writeText(meals+boosts+total).then(()=>toast("Day copied"));
+  const meals=TYPES.map(t=> STATE.meals[t]?textifyMeal(STATE.meals[t]):"").join("\n\n---\n\n");
+  const boosts=STATE.boosters.length? `\n\nBoosters:\n- ${STATE.boosters.map(b=>`${b.name} (+${b.calories} kcal)`).join("\n- ")}`:"";
+  const total=`\n\nTOTAL: ${kcalTotal()} kcal`;
+  navigator.clipboard.writeText(meals+boosts+total);
 }
 
-/* ===== Tiny toast ===== */
-let toastEl;
-function toast(msg){
-  if(!toastEl){
-    toastEl = document.createElement("div");
-    Object.assign(toastEl.style,{position:"fixed",bottom:"18px",left:"50%",transform:"translateX(-50%)",
-      background:"#17191b",color:"#fff",border:"1px solid #262a2f",padding:"10px 14px",borderRadius:"10px",zIndex:9999});
-    document.body.appendChild(toastEl);
-  }
-  toastEl.textContent = msg; toastEl.style.opacity='1'; setTimeout(()=>toastEl.style.opacity='0',1000);
-}
-
-/* ===== Events & Boot ===== */
-$("#gen").onclick = generate;
-$("#shuffle").onclick = shuffle;
-$("#copy").onclick = copyDay;
+/* ============== INIT ============== */
+$("#gen").onclick=generate;
+$("#shuffle").onclick=shuffle;
+$("#copy").onclick=copyDay;
 buildTabs();
 window.addEventListener("DOMContentLoaded", generate);
 </script>
