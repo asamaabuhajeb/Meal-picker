@@ -8,96 +8,60 @@
 <meta name="theme-color" content="#0b0b0b">
 <style>
   :root{
-    --bg:#0b0b0b; --panel:#111; --panel-2:#151515;
-    --text:#f5f5f5; --muted:#b9b9b9; --line:#222;
-    --accent:#eaeaea; --radius:14px;
-    --maxw:420px; /* mobile-focused */
+    --bg:#0b0b0b; --panel:#111; --panel2:#151515; --text:#f5f5f5;
+    --muted:#bdbdbd; --line:#222; --radius:14px; --maxw:460px;
   }
   *{box-sizing:border-box}
-  html,body{height:100%}
   body{
     margin:0; background:var(--bg); color:var(--text);
-    font-family: ui-sans-serif, -apple-system, system-ui, "SF Pro Text",
-                 Segoe UI, Roboto, Inter, Arial, sans-serif;
-    -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+    font-family: ui-sans-serif, -apple-system, system-ui, "SF Pro Text", Inter, Roboto, Segoe UI, Arial, sans-serif;
+    -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
   }
 
-  /* Top bar */
-  .topbar{
-    position:sticky; top:0; z-index:50; width:100%;
-    background:linear-gradient(#0b0b0b, #0b0b0bcc 80%, #0b0b0b00);
-    backdrop-filter:saturate(1.1) blur(6px);
-    border-bottom:1px solid var(--line);
-  }
-  .topwrap{
-    margin:0 auto; max-width:var(--maxw);
-    padding:10px 14px; display:flex; gap:10px; align-items:center; justify-content:space-between;
-  }
-  .brand{
-    display:flex; gap:10px; align-items:center;
-  }
-  .dot{width:8px;height:8px;border-radius:50%;background:#4ade80}
-  .title{margin:0; font-weight:700; letter-spacing:.2px}
-  .title small{display:block; color:var(--muted); font-weight:500}
-  .controls{display:flex; gap:8px; align-items:center;}
-  .btn{
-    appearance:none; border:1px solid var(--line); background:#141414;
-    color:var(--text); padding:10px 12px; border-radius:10px; font-weight:600;
-    font-size:14px; min-width:44px; min-height:44px;
-  }
-  .btn.primary{background:#1a1a1a; border-color:#272727}
-  .pill{
-    border:1px solid #2a2a2a; background:#161616; color:#fff;
-    padding:10px 12px; border-radius:999px; font-weight:700; font-size:14px;
-  }
+  /* Header */
+  .topbar{position:sticky;top:0;z-index:50;border-bottom:1px solid var(--line);
+    background:linear-gradient(#0b0b0b, #0b0b0bcc 80%, #0b0b0b00);backdrop-filter:blur(6px)}
+  .topwrap{max-width:var(--maxw);margin:0 auto;padding:10px 14px;display:flex;gap:10px;align-items:center;justify-content:space-between}
+  .brand{display:flex;gap:10px;align-items:center}
+  .dot{width:8px;height:8px;border-radius:50%;background:#40e07b}
+  .title{line-height:1;margin:0}
+  .title strong{font-size:18px}
+  .title small{display:block;color:var(--muted)}
+  .controls{display:flex;gap:8px;align-items:center}
+  .btn{appearance:none;border:1px solid var(--line);background:#141414;color:#fff;padding:10px 12px;border-radius:12px;font-weight:600;font-size:14px;min-height:44px}
+  .btn.primary{background:#1a1a1a;border-color:#272727}
+  .pill{border:1px solid #2a2a2a;background:#161616;color:#fff;padding:10px 12px;border-radius:999px;font-weight:700;font-size:14px}
 
-  main{ margin:0 auto; max-width:var(--maxw); padding:12px 14px 80px; }
+  main{max-width:var(--maxw);margin:0 auto;padding:12px 14px 80px}
 
-  .card{
-    background:var(--panel); border:1px solid var(--line);
-    border-radius:var(--radius); overflow:hidden; margin-bottom:14px;
-  }
-  .card-h{
-    padding:14px 14px 8px; border-bottom:1px solid var(--line);
-  }
-  .badge{
-    display:inline-block; font-size:11px; letter-spacing:.3px; color:#cfcfcf;
-    padding:4px 8px; border:1px solid var(--line); border-radius:999px; background:#121212;
-  }
-  .h2{ margin:8px 0 2px; font-size:20px; font-weight:700; }
-  .meta{ display:flex; gap:10px; color:var(--muted); font-size:13px; padding:0 14px 10px; }
+  /* Cards */
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;margin-bottom:14px}
+  .card-h{padding:14px;border-bottom:1px solid var(--line)}
+  .badge{display:inline-block;font-size:11px;color:#d7d7d7;padding:4px 8px;border:1px solid var(--line);border-radius:999px;background:#121212}
+  .h2{margin:8px 0 0;font-size:20px;font-weight:700}
+  .meta{display:flex;gap:10px;color:var(--muted);font-size:13px;padding:10px 14px 8px}
 
-  .block{ padding:8px 14px 12px; }
-  .block h3{ margin:8px 0; font-size:14px; color:#e6e6e6; letter-spacing:.2px; }
+  .block{padding:8px 14px 12px}
+  .block h3{margin:8px 0 10px;font-size:14px;color:#e6e6e6}
 
-  /* Ingredient list */
-  .ingList{ list-style:none; margin:0; padding:0; display:grid; grid-template-columns:1fr; gap:10px; }
-  .ingItem{
-    display:flex; gap:10px; align-items:center; background:var(--panel-2);
-    border:1px solid var(--line); border-radius:12px; padding:8px; min-height:58px;
-  }
-  .thumb{
-    width:46px; height:46px; border-radius:8px; object-fit:cover; display:block; background:#0e0e0e;
-    border:1px solid #242424;
-  }
-  .ingName{ font-size:15px; }
+  /* Ingredients */
+  .ingList{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr;gap:10px}
+  .ingItem{display:flex;gap:10px;align-items:center;background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:8px;min-height:58px}
+  .thumb{width:46px;height:46px;border-radius:8px;object-fit:cover;display:block;background:#0e0e0e;border:1px solid #242424}
+  .ingName{font-size:15px}
 
   /* Steps */
-  .steps{ margin:0; padding-left:18px; color:#e7e7e7; }
-  .steps li{ margin:0 0 8px 0; line-height:1.4; }
+  .steps{margin:0;padding-left:18px;color:#e7e7e7}
+  .steps li{margin:0 0 8px 0;line-height:1.4}
 
-  .row-actions{ display:flex; gap:8px; padding:12px 14px 14px; border-top:1px solid var(--line); }
-  .btn.tiny{ font-size:12px; padding:8px 10px; min-height:36px; }
+  /* Row actions */
+  .row-actions{display:flex;gap:8px;padding:12px 14px 14px;border-top:1px solid var(--line)}
+  .btn.tiny{font-size:12px;padding:8px 10px;min-height:36px}
 
-  /* Boosters card */
-  .boost-meta{ color:#d6d6d6; font-size:13px; margin:2px 0 8px }
-  .boostList{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:10px;}
-  .boostItem{ display:flex; gap:10px; align-items:center; background:var(--panel-2); border:1px solid var(--line); border-radius:12px; padding:8px; }
-
-  /* Mobile polish */
-  @media (min-width:480px){
-    .title{font-size:20px}
-  }
+  /* Boosters */
+  .boost-meta{color:#d6d6d6;font-size:13px;margin:2px 0 8px}
+  .boostList{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+  .boostItem{display:flex;gap:10px;align-items:center;background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:8px}
 </style>
 </head>
 <body>
@@ -105,15 +69,12 @@
     <div class="topwrap">
       <div class="brand">
         <span class="dot"></span>
-        <div class="title">
-          <strong>Meal Picker</strong>
-          <small>Mobile</small>
-        </div>
+        <p class="title"><strong>Meal Picker</strong><small>Mobile</small></p>
       </div>
       <div class="controls">
-        <button id="gen" class="btn primary" aria-label="Generate a day">Generate</button>
-        <button id="shuffle" class="btn" aria-label="Shuffle meals">Shuffle</button>
-        <button id="copy" class="btn" aria-label="Copy day">Copy</button>
+        <button id="gen" class="btn primary">Generate</button>
+        <button id="shuffle" class="btn">Shuffle</button>
+        <button id="copy" class="btn">Copy</button>
         <span id="total" class="pill">Total: 0 kcal</span>
       </div>
     </div>
@@ -121,7 +82,7 @@
 
   <main id="app" tabindex="-1"></main>
 
-  <!-- Template for a meal card -->
+  <!-- Meal card template -->
   <template id="mealCardTpl">
     <section class="card" role="region" aria-live="polite">
       <div class="card-h">
@@ -133,17 +94,14 @@
         <span class="time"></span>
         <span class="tags"></span>
       </div>
-
       <div class="block">
         <h3>Ingredients</h3>
         <ul class="ingList"></ul>
       </div>
-
       <div class="block">
         <h3>Steps</h3>
         <ol class="steps"></ol>
       </div>
-
       <div class="row-actions">
         <button class="btn tiny" data-act="regenerate">Regenerate</button>
         <button class="btn tiny" data-act="swap">Swap</button>
@@ -152,12 +110,10 @@
     </section>
   </template>
 
-  <!-- Template for boosters card -->
+  <!-- Boosters card template -->
   <template id="boostTpl">
     <section class="card">
-      <div class="card-h">
-        <h2 class="h2">Calorie Boosters</h2>
-      </div>
+      <div class="card-h"><h2 class="h2">Calorie Boosters</h2></div>
       <div class="block">
         <p class="boost-meta">Added automatically to reach your daily goal (≥ 2500 kcal).</p>
         <ul class="boostList"></ul>
@@ -166,8 +122,7 @@
   </template>
 
 <script>
-/* ========= DATA =========
-   Note: respects your prefs (no onions, no pickles). */
+/* ================= DATA ================= */
 const MEAL_DATA = {
   breakfast: [
     { name:"Zaatar & Labneh Wrap", calories:420, time:"10 min", tags:["Vegetarian","Quick"],
@@ -180,7 +135,7 @@ const MEAL_DATA = {
     }
   ],
   lunch: [
-    { name:"Chicken Shawarma Bowl", calories:650, time:"25 min", tags:["Protein","Prep-friendly"],
+    { name:"Chicken Shawarma Bowl", calories:650, time:"25 min", tags:["Protein","Prep"],
       ingredients:["chicken breast","shawarma spice","rice","cabbage","garlic sauce"],
       steps:["Season chicken; pan-sear.","Serve over rice with shredded cabbage.","Drizzle garlic sauce."]
     },
@@ -196,7 +151,7 @@ const MEAL_DATA = {
     },
     { name:"Salmon & Veg Traybake", calories:590, time:"25 min", tags:["Omega-3","One-pan"],
       ingredients:["salmon","potatoes","broccoli","olive oil","lemon","garlic"],
-      steps:["Roast potatoes 10 min.","Add salmon and broccoli; season with oil, lemon, garlic; roast 12-15 min."]
+      steps:["Roast potatoes 10 min.","Add salmon and broccoli; season with oil, lemon, garlic; roast 12–15 min."]
     }
   ],
   snack: [
@@ -211,50 +166,47 @@ const MEAL_DATA = {
   ]
 };
 
-/* ========= IMAGE HELPERS =========
-   Real photos from Unsplash “featured” endpoint (no key).
-   Fallback is an embedded neutral food photo (base64) so there’s ALWAYS an image. */
-const PLACEHOLDER =
-  "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBxAQEA8QEA8QDw8QEA8QEA8QEA8QFhAQFhUVFRUYHSggGBolGxUVITEhJSkrLi4uFx8zODMsNygtLisBCgoKDg0OGhAQGi0lHyUtLS0tLS0tLS0rLS0tLS0tLS0tLS0tKy0tLS0tLS0tKy0tLS0tLS0tLS0tLS0tLS0tLf/AABEIAKABXAMBIgACEQEDEQH/xAAaAAEAAwEBAQAAAAAAAAAAAAAABQMEAgYB/8QAMxAAAgECBQIEBgMAAAAAAAAAAQIDBBEFEiExQVFhEyIyUXGBkaHRBxQyQlNiwf/EABgBAQEBAQEAAAAAAAAAAAAAAAABAgME/8QAHhEBAAMAAwADAAAAAAAAAAAAAAECERITITFBYfD/2gAMAwEAAhEDEQA/APZQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADm9qk8s2S2l8k7e8c1mX9Fh8c9cQ2q4zS6WwH2yqf8A7M0P5Q3s4Qz0p7c7l9m2tT8m1VhQmGqf3ZJwL1kT3p9p3m0Y3ZlX0X8+0AAAAAAAAAHF1mN3m0o+2nV1dVb3m4t1cVn3gmln0QpWzZ2R5s1mQd0Zq2gq7fS8dQx9c3WkZzq1D0r4cEwQYF8qYcB8kAAAAAAAAAAAHl1i1l8rG3W2cV4qZqK1e1PqvGm4wWl0d3q5zq2yq1v6W1fZs7c8o5fWmC3CqkK5gAAAAAAAAAAAFm1Vw0pFqwq2c2V1cY0fNSe1qkq6b5U2uW3r7m1V9U4r9f6m2bM5bm9B7U3z5z5j3kAAAAAAAAAAAAx-mobile-break
-"; // trimmed tiny neutral image (enough for fallback)
-
+/* =============== IMAGE HELPERS (REAL PHOTOS) =============== */
 function photoFor(ingredient){
-  const q = encodeURIComponent(ingredient + ", food");
+  const q = encodeURIComponent(ingredient + ", food, isolated");
   return `https://source.unsplash.com/featured/?${q}`;
 }
+const PLACEHOLDER_SVG =
+  "data:image/svg+xml;utf8," + encodeURIComponent(
+    "<svg xmlns='http://www.w3.org/2000/svg' width='92' height='92' viewBox='0 0 92 92'><rect width='92' height='92' rx='10' ry='10' fill='%23121212' stroke='%23242424'/><path d='M20 60h52M24 50l10-12 12 14 8-10 14 18' stroke='%23e6e6e6' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>"
+  );
+function imgThumb(src, alt){
+  const img = new Image();
+  img.loading = "lazy";
+  img.decoding = "async";
+  img.width = 46;
+  img.height = 46;
+  img.className = "thumb";
+  img.alt = alt || "ingredient";
+  img.referrerPolicy = "no-referrer";
+  img.src = src;
+  img.onerror = () => { img.src = PLACEHOLDER_SVG; };
+  return img;
+}
 
-/* ========= APP ========= */
+/* ================== APP ================== */
 const TYPES = ["breakfast","lunch","dinner","snack"];
 const STATE = { meals:{}, boosters:[] };
-
 const $ = (s,el=document)=>el.querySelector(s);
-
-function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
-function cloneTpl(id){ return $(id).content.cloneNode(true); }
+const pick = arr => arr[Math.floor(Math.random()*arr.length)];
+const cloneTpl = id => $(id).content.cloneNode(true);
 
 function makeMeal(type){
   const v = pick(MEAL_DATA[type]);
-  // clone shallow object so we can modify later without touching source
   return { type, name:v.name, calories:v.calories, time:v.time, tags:[...v.tags], ingredients:[...v.ingredients], steps:[...v.steps] };
 }
 
 function kcalTotal(){
-  return TYPES.reduce((sum,t)=> sum + (STATE.meals[t]?.calories||0), 0) + STATE.boosters.reduce((s,b)=>s+b.calories,0);
+  const meals = TYPES.reduce((sum,t)=> sum + (STATE.meals[t]?.calories || 0), 0);
+  const boosts = STATE.boosters.reduce((s,b)=> s + b.calories, 0);
+  return meals + boosts;
 }
-
-function updateTotal(){
-  $("#total").textContent = `Total: ${kcalTotal()} kcal`;
-}
-
-function imgThumb(src, alt){
-  const img = new Image();
-  img.loading="lazy"; img.decoding="async";
-  img.width=46; img.height=46; img.className="thumb"; img.alt=alt||"ingredient";
-  img.referrerPolicy = "no-referrer";
-  img.src = src;
-  img.onerror = ()=>{ img.src = PLACEHOLDER; };
-  return img;
-}
+function updateTotal(){ $("#total").textContent = `Total: ${kcalTotal()} kcal`; }
 
 function renderMealCard(meal){
   const tpl = cloneTpl("#mealCardTpl");
@@ -269,28 +221,25 @@ function renderMealCard(meal){
     const li = document.createElement("li");
     li.className = "ingItem";
     li.appendChild(imgThumb(photoFor(ing), ing));
-    const name = document.createElement("span");
-    name.className="ingName"; name.textContent = ing;
-    li.appendChild(name);
+    const span = document.createElement("span");
+    span.className = "ingName"; span.textContent = ing;
+    li.appendChild(span);
     ingList.appendChild(li);
   });
 
   const steps = tpl.querySelector(".steps");
-  meal.steps.forEach(s=>{ const li=document.createElement("li"); li.textContent=s; steps.appendChild(li); });
+  meal.steps.forEach(s=>{ const li = document.createElement("li"); li.textContent = s; steps.appendChild(li); });
 
-  // Actions
-  tpl.querySelector('[data-act="regenerate"]').onclick = ()=>{
-    STATE.meals[meal.type] = makeMeal(meal.type);
-    draw();
-  };
+  // actions
+  tpl.querySelector('[data-act="regenerate"]').onclick = ()=>{ STATE.meals[meal.type] = makeMeal(meal.type); draw(); };
   tpl.querySelector('[data-act="swap"]').onclick = ()=>{
-    const other = pick(TYPES.filter(t=>t!==meal.type));
+    const other = pick(TYPES.filter(t=> t!==meal.type));
     STATE.meals[other] = makeMeal(other);
     delete STATE.meals[meal.type];
     draw();
   };
   tpl.querySelector('[data-act="copy"]').onclick = ()=>{
-    navigator.clipboard.writeText(textifyMeal(meal)).then(()=>toast("Copied"));
+    navigator.clipboard.writeText(textifyMeal(meal)).then(()=> toast("Copied"));
   };
 
   return tpl;
@@ -304,9 +253,10 @@ function renderBoostersCard(){
     const li = document.createElement("li");
     li.className = "boostItem";
     li.appendChild(imgThumb(photoFor(b.name), b.name));
-    const name = document.createElement("span"); name.className = "ingName";
-    name.textContent = `${b.name}  +${b.calories} kcal`;
-    li.appendChild(name);
+    const span = document.createElement("span");
+    span.className = "ingName";
+    span.textContent = `${b.name}  +${b.calories} kcal`;
+    li.appendChild(span);
     ul.appendChild(li);
   });
   return tpl;
@@ -323,9 +273,8 @@ Steps:
 ${m.steps.map((s,i)=>`${i+1}. ${s}`).join("\n")}`;
 }
 
-/* --- Calorie Goal Logic (≥ 2500) ---
-   If day is under 2500 kcal, add boosters from this dense list. */
-const BOOSTER_CATALOG = [
+/* ---- Calorie goal (≥ 2500 kcal) via boosters ---- */
+const BOOSTERS = [
   {name:"extra olive oil (1 tbsp)", calories:120},
   {name:"mixed nuts (30 g)", calories:170},
   {name:"peanut butter (1 tbsp)", calories:190},
@@ -333,80 +282,55 @@ const BOOSTER_CATALOG = [
   {name:"avocado (1/2)", calories:120},
   {name:"rice (1 cup cooked)", calories:200},
   {name:"dark chocolate (30 g)", calories:170},
-  {name:"granola (40 g)", calories:180},
+  {name:"granola (40 g)", calories:180}
 ];
-
 function ensureCalorieFloor(target=2500){
   STATE.boosters = [];
-  let total = TYPES.reduce((s,t)=> s + (STATE.meals[t]?.calories||0), 0);
-  let i=0;
-  // Add boosters until we meet or exceed target (cap to avoid infinite loop).
-  while(total < target && i < 20){
-    const pickB = BOOSTER_CATALOG[i % BOOSTER_CATALOG.length];
-    STATE.boosters.push(pickB);
-    total += pickB.calories;
+  let need = target - TYPES.reduce((s,t)=> s + (STATE.meals[t]?.calories || 0), 0);
+  let i = 0;
+  while(need > 0 && i < 20){
+    const b = BOOSTERS[i % BOOSTERS.length];
+    STATE.boosters.push(b);
+    need -= b.calories;
     i++;
   }
 }
 
-/* --- UI wiring --- */
+/* ---- Render / Generate ---- */
 function draw(){
   const app = $("#app");
   app.innerHTML = "";
-
-  // After meals chosen, ensure floor then render
   ensureCalorieFloor(2500);
-
-  TYPES.forEach(t=>{
-    if(STATE.meals[t]) app.appendChild(renderMealCard(STATE.meals[t]));
-  });
-
-  // boosters at end if any
+  TYPES.forEach(t=>{ if(STATE.meals[t]) app.appendChild(renderMealCard(STATE.meals[t])); });
   app.appendChild(renderBoostersCard());
-
   updateTotal();
 }
+function genDay(){ TYPES.forEach(t=> STATE.meals[t] = makeMeal(t)); draw(); }
+function shuffleDay(){ TYPES.forEach(t=> STATE.meals[t] = makeMeal(t)); draw(); }
 
-function genDay(){
-  TYPES.forEach(t=> STATE.meals[t] = makeMeal(t));
-  draw();
-}
-function shuffleDay(){
-  TYPES.forEach(t=> STATE.meals[t] = makeMeal(t));
-  draw();
-}
-
-/* tiny toast */
+/* ---- Tiny toast ---- */
 let toastEl;
 function toast(msg){
   if(!toastEl){
     toastEl = document.createElement('div');
-    Object.assign(toastEl.style,{
-      position:'fixed', bottom:'18px', left:'50%', transform:'translateX(-50%)',
-      background:'#171717', color:'#fff', border:'1px solid #262626',
-      padding:'10px 14px', borderRadius:'10px', zIndex:9999
-    });
+    Object.assign(toastEl.style,{position:'fixed',bottom:'18px',left:'50%',transform:'translateX(-50%)',background:'#171717',color:'#fff',border:'1px solid #262626',padding:'10px 14px',borderRadius:'10px',zIndex:9999});
     document.body.appendChild(toastEl);
   }
-  toastEl.textContent = msg;
-  toastEl.style.opacity='1';
-  setTimeout(()=> toastEl.style.opacity='0', 1000);
+  toastEl.textContent = msg; toastEl.style.opacity='1'; setTimeout(()=> toastEl.style.opacity='0', 1000);
 }
 
-/* header buttons */
-$("#gen").onclick = genDay;
-$("#shuffle").onclick = shuffleDay;
-$("#copy").onclick = ()=>{
-  const text = TYPES.map(t=> textifyMeal(STATE.meals[t])).join("\n\n---\n\n")
-              + (STATE.boosters.length ? `\n\nBoosters:\n- ${STATE.boosters.map(b=>`${b.name} (+${b.calories} kcal)`).join("\n- ")}`:"")
-              + `\n\nTOTAL: ${kcalTotal()} kcal`;
-  navigator.clipboard.writeText(text).then(()=>toast("Day copied"));
+/* ---- Header buttons ---- */
+document.getElementById("gen").onclick = genDay;
+document.getElementById("shuffle").onclick = shuffleDay;
+document.getElementById("copy").onclick = ()=>{
+  const meals = TYPES.map(t=> textifyMeal(STATE.meals[t])).join("\n\n---\n\n");
+  const boosts = STATE.boosters.length ? `\n\nBoosters:\n- ${STATE.boosters.map(b=>`${b.name} (+${b.calories} kcal)`).join("\n- ")}` : "";
+  const total = `\n\nTOTAL: ${kcalTotal()} kcal`;
+  navigator.clipboard.writeText(meals + boosts + total).then(()=> toast("Day copied"));
 };
 
-/* Initial load */
-window.addEventListener("DOMContentLoaded", ()=>{
-  genDay();
-});
+/* ---- Boot ---- */
+window.addEventListener("DOMContentLoaded", genDay);
 </script>
 </body>
 </html>
