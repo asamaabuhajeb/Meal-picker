@@ -1,0 +1,378 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Daily Meal Picker — 4 Meals</title>
+<style>
+  :root{
+    --bg:#0d1117;
+    --panel:#111826;
+    --accent:#3b82f6;
+    --text:#e5e7eb;
+    --muted:#9ca3af;
+    --ok:#10b981;
+    --warn:#f59e0b;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Helvetica,Arial,sans-serif}
+  .wrap{max-width:820px;margin:0 auto;padding:16px 14px 80px}
+  header{position:sticky;top:0;background:linear-gradient(180deg,rgba(13,17,23,.92),rgba(13,17,23,.75));backdrop-filter:blur(8px);z-index:10;padding:12px 14px;border-bottom:1px solid #1f2430}
+  h1{font-size:20px;margin:0 0 8px}
+  .sub{color:var(--muted);font-size:13px}
+  .controls{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+  button,.chip{appearance:none;border:1px solid #263040;background:#0f172a;color:var(--text);padding:10px 12px;border-radius:10px;font-weight:600}
+  button.primary{background:var(--accent);border-color:transparent;color:white}
+  button:active{transform:scale(.99)}
+  .grid{display:grid;grid-template-columns:1fr;gap:12px;margin-top:14px}
+  @media(min-width:680px){.grid{grid-template-columns:1fr 1fr}}
+  .card{background:var(--panel);border:1px solid #1f2937;border-radius:14px;padding:14px;box-shadow:0 2px 24px rgba(0,0,0,.25)}
+  .card h3{margin:0 0 6px;font-size:16px}
+  .badge{display:inline-block;padding:4px 8px;border-radius:999px;background:#0f172a;border:1px solid #233047;color:#9cc1ff;font-size:12px}
+  .list{margin:8px 0 0;padding-left:18px}
+  .list li{margin:4px 0}
+  .row{display:flex;align-items:center;justify-content:space-between;gap:10px}
+  .muted{color:var(--muted)}
+  .footer{position:fixed;left:0;right:0;bottom:0;background:linear-gradient(0deg,rgba(13,17,23,.96),rgba(13,17,23,.75));backdrop-filter:blur(8px);padding:10px;border-top:1px solid #1f2430}
+  .footer .controls{justify-content:center}
+  .pill{border-radius:999px;padding:8px 10px;background:#0f172a;border:1px solid #233047;color:#7fb7ff;font-size:12px}
+  details summary{cursor:pointer;user-select:none}
+  .inline{display:inline-flex;gap:6px;align-items:center;flex-wrap:wrap}
+  .copy{font-size:13px;border-color:#1f2937}
+  .ok{color:var(--ok)}
+  .warn{color:var(--warn)}
+  .small{font-size:12px}
+  .hidden{display:none}
+  .section{margin-top:16px}
+  textarea{width:100%;min-height:140px;border-radius:10px;border:1px solid #1f2937;background:#0f172a;color:var(--text);padding:10px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+  .modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.6);z-index:50}
+  .modal .panel{background:var(--panel);border:1px solid #1f2937;border-radius:14px;max-width:720px;width:92%;padding:14px}
+  .linklike{color:#93c5fd;text-decoration:underline;cursor:pointer}
+</style>
+</head>
+<body>
+  <header>
+    <div class="row">
+      <div>
+        <h1>Daily Meal Picker</h1>
+        <div class="sub">Tap to generate <b>Breakfast • Lunch • Dinner • Snack</b>. Random each tap or same-day seed.</div>
+      </div>
+      <div class="inline">
+        <span class="pill" id="todayLbl"></span>
+      </div>
+    </div>
+    <div class="controls">
+      <button class="primary" id="btnGenerate">Generate Day</button>
+      <button id="btnRandom">Randomize (No Seed)</button>
+      <button id="btnGrocery" class="copy">Copy Grocery List</button>
+      <button id="btnCustom" class="copy">Add/Import Recipes</button>
+    </div>
+    <div class="inline small" style="margin-top:8px">
+      <label class="inline small"><input type="checkbox" id="seedByDate" checked> Seed by today</label>
+      <label class="inline small"><input type="checkbox" id="avoidDuplicates" checked> Avoid duplicates</label>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <section class="grid" id="cards"></section>
+
+    <section class="section">
+      <details>
+        <summary><span class="badge">Tips</span> How it works & customization</summary>
+        <ul class="list">
+          <li>By default, results are the same all day (seeded by date). Turn off <em>Seed by today</em> to reshuffle freely.</li>
+          <li>Tap <b>Add/Import Recipes</b> to paste your own recipes JSON or add manually. They’re saved locally on your phone.</li>
+          <li>Use <b>Copy Grocery List</b> to grab all ingredients across the 4 meals.</li>
+        </ul>
+      </details>
+    </section>
+  </div>
+
+  <div class="footer">
+    <div class="controls">
+      <span class="muted small">Works fully offline once loaded • Designed for iPhone</span>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal" id="modal">
+    <div class="panel">
+      <div class="row">
+        <h3 style="margin:0">Custom Recipes</h3>
+        <button id="closeModal">Close</button>
+      </div>
+      <p class="small muted">You can paste JSON below (format shown), or use <span class="linklike" id="addOne">Add one recipe</span>.</p>
+      <textarea id="jsonBox" placeholder='{
+  "breakfast":[{"title":"Oat Yogurt Bowl","ingredients":["..."],"steps":["..."]}],
+  "lunch":[...],
+  "dinner":[...],
+  "snack":[...]
+}'></textarea>
+      <div class="controls" style="justify-content:flex-end">
+        <button id="saveJson" class="primary">Save</button>
+        <button id="clearJson" class="warn">Reset to Defaults</button>
+      </div>
+      <div id="addForm" class="hidden">
+        <hr style="border-color:#1f2937">
+        <div class="row">
+          <select id="cat">
+            <option value="breakfast">Breakfast</option>
+            <option value="lunch">Lunch</option>
+            <option value="dinner">Dinner</option>
+            <option value="snack">Snack</option>
+          </select>
+          <input id="title" placeholder="Title" style="flex:1;padding:8px;border-radius:8px;border:1px solid #1f2937;background:#0f172a;color:var(--text)">
+        </div>
+        <div class="row" style="margin-top:6px">
+          <textarea id="ings" placeholder="Ingredients — one per line"></textarea>
+        </div>
+        <div class="row" style="margin-top:6px">
+          <textarea id="steps" placeholder="Steps — one per line"></textarea>
+        </div>
+        <div class="controls" style="justify-content:flex-end">
+          <button id="saveOne" class="primary">Add Recipe</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+const DEFAULT_DB = {
+  breakfast: [
+    {title:"Zaatar & Labneh Wrap", ingredients:["1 flatbread","2 tbsp labneh","1 tsp zaatar + olive oil","Sliced cucumber & tomato"], steps:["Spread labneh, drizzle zaatar oil.","Add veggies and roll.","Toast lightly in pan 1–2 min."]},
+    {title:"Eggs & Halloumi Plate", ingredients:["2 eggs","3–4 slices halloumi","Olives","Cherry tomatoes"], steps:["Pan-fry halloumi until golden.","Scramble or fry eggs.","Plate with olives & tomatoes."]},
+    {title:"Peanut Banana Oats", ingredients:["1/2 cup oats","1 cup milk/water","1 banana, sliced","1 tbsp peanut butter"], steps:["Cook oats with liquid 3–5 min.","Stir in PB, top with banana."]},
+    {title:"Greek Yogurt Bowl", ingredients:["1 cup yogurt","1 tbsp honey","Granola or nuts","Seasonal fruit"], steps:["Mix yogurt & honey.","Top with granola and fruit."]},
+    {title:"Cheese & Thyme Omelette", ingredients:["2–3 eggs","Handful grated cheese","Pinch dried thyme","Salt & pepper"], steps:["Beat eggs with thyme, salt.","Cook in pan, add cheese, fold."]},
+    {title:"Foul (Simple Fava Mash)", ingredients:["1 can fava beans","1 clove garlic","Olive oil, lemon, cumin","Parsley"], steps:["Warm beans, mash with garlic.","Season with cumin, lemon, oil.","Top parsley, eat with bread."]},
+    {title:"Avocado Toast", ingredients:["2 toasts","1 avocado","Chili flakes","Lemon, salt"], steps:["Mash avocado with lemon/salt.","Spread on toast, add chili."]},
+    {title:"Tuna & Corn Toastie", ingredients:["1 small can tuna","2 tbsp corn","1 tbsp mayo","2 toasts"], steps:["Mix tuna, corn, mayo.","Fill toast, press/pan until golden."]}
+  ],
+  lunch: [
+    {title:"Chicken Shawarma Bowl", ingredients:["200g chicken strips","Shawarma spices","Rice or bulgur","Tomato, pickles, tahini"], steps:["Marinate chicken, pan-sear.","Serve over rice with veg + tahini."]},
+    {title:"Beef Kofta Wraps", ingredients:["200g kofta","Flatbread","Onion, parsley","Tahini or garlic sauce"], steps:["Grill/ pan-fry kofta.","Wrap with onions, parsley, sauce."]},
+    {title:"Tuna Pasta Salad", ingredients:["150g pasta","1 can tuna","Corn, olives","Olive oil, lemon"], steps:["Boil pasta, cool.","Mix tuna & veg, dress with oil + lemon."]},
+    {title:"Halloumi Couscous", ingredients:["1 cup couscous","Halloumi cubes","Cherry tomatoes","Mint, lemon"], steps:["Steam couscous.","Pan halloumi; mix with tomatoes & mint, lemon."]},
+    {title:"Grilled Chicken Salad", ingredients:["Chicken breast","Mixed greens","Cucumber, tomato","Yogurt-garlic dressing"], steps:["Season & grill chicken.","Toss salad; slice chicken on top."]},
+    {title:"Rice & Veg Stir-fry", ingredients:["2 cups cooked rice","Mixed veg","Soy sauce","Egg (optional)"], steps:["Stir-fry veg, push aside, scramble egg.","Add rice + soy; toss until hot."]},
+    {title:"Lentil Soup & Bread", ingredients:["1 cup red lentils","Onion, carrot","Cumin, turmeric","Stock/water"], steps:["Sauté onion/carrot; add lentils + spices.","Add water; simmer 15–20m; blend if desired."]},
+    {title:"Burger Plate (No Bun)", ingredients:["Beef patty","Cheese slice","Salad","Potato or rice"], steps:["Cook patty; melt cheese.","Serve with salad and side."]}
+  ],
+  dinner: [
+    {title:"Oven Chicken & Potatoes", ingredients:["Chicken thighs","Potatoes wedges","Paprika, garlic","Olive oil"], steps:["Toss all with spices.","Roast 35–45m at 200°C until done."]},
+    {title:"Spiced Rice (Maqluba-lite)", ingredients:["Rice","Mixed veg (cauli/eggplant)","Chicken or chickpeas","Allspice"], steps:["Par-cook veg; layer with rice + protein.","Season; cook like pilaf until fluffy."]},
+    {title:"Baked Salmon & Veg", ingredients:["Salmon fillet","Broccoli or beans","Lemon, dill","Olive oil"], steps:["Season; bake 12–15m at 200°C.","Steam/roast veg; serve."]},
+    {title:"Creamy Mushroom Pasta", ingredients:["Pasta","Mushrooms","Cream or milk","Garlic, pepper"], steps:["Sauté mushrooms/garlic.","Add cream; toss pasta; season."]},
+    {title:"Shish Tawook Skewers", ingredients:["Chicken cubes","Yogurt, lemon","Garlic, paprika","Flatbread"], steps:["Marinate in yogurt/lemon/spices.","Grill/pan on skewers; serve with bread."]},
+    {title:"Veggie Omelette Dinner", ingredients:["3 eggs","Peppers, onion","Cheese","Herbs"], steps:["Sauté veg; pour eggs; add cheese; fold."]},
+    {title:"Steak & Arugula", ingredients:["Steak","Arugula","Parmesan","Balsamic"], steps:["Sear steak; rest.","Toss arugula with balsamic & cheese."]},
+    {title:"One-Pan Chicken Orzo", ingredients:["Chicken pieces","Orzo","Onion, garlic","Stock"], steps:["Brown chicken; add aromatics + orzo + stock.","Simmer until orzo tender."]}
+  ],
+  snack: [
+    {title:"Dates & Nuts", ingredients:["4–6 dates","Handful of almonds/walnuts"], steps:["Pit dates; eat with nuts."]},
+    {title:"Fruit & Peanut Butter", ingredients:["Apple or banana","1 tbsp peanut butter"], steps:["Slice fruit; dip/spread PB."]},
+    {title:"Labneh Cucumber Dip", ingredients:["1/2 cup labneh","Cucumber diced","Mint","Olive oil"], steps:["Mix all; drizzle oil; eat with crackers/veg."]},
+    {title:"Dark Chocolate & Strawberries", ingredients:["20–30g dark chocolate","Strawberries"], steps:["Wash strawberries; enjoy with chocolate."]},
+    {title:"Hummus & Carrots", ingredients:["1/2 cup hummus","Carrot sticks"], steps:["Dip and enjoy."]},
+    {title:"Popcorn (Stovetop)", ingredients:["1/4 cup kernels","1 tbsp oil","Salt"], steps:["Heat oil; pop kernels; season."]},
+    {title:"Cheese & Olives", ingredients:["Cheese cubes","Mixed olives"], steps:["Plate and snack."]},
+    {title:"Protein Yogurt", ingredients:["1 cup yogurt","1 scoop protein (optional)","Honey"], steps:["Mix; sweeten lightly."]}
+  ]
+};
+
+// state
+let DB = loadDB();
+const cardsEl = document.getElementById('cards');
+const seedByDate = document.getElementById('seedByDate');
+const avoidDuplicates = document.getElementById('avoidDuplicates');
+const todayLbl = document.getElementById('todayLbl');
+const todayStr = new Date().toLocaleDateString(undefined,{weekday:'short',year:'numeric',month:'short',day:'numeric'});
+todayLbl.textContent = todayStr;
+
+function loadDB(){
+  try{
+    const saved = localStorage.getItem('mealDB_v1');
+    if(saved){ return JSON.parse(saved); }
+  }catch(e){}
+  return JSON.parse(JSON.stringify(DEFAULT_DB));
+}
+function saveDB(){
+  localStorage.setItem('mealDB_v1', JSON.stringify(DB));
+}
+
+function seededRandom(seed){
+  // xorshift32
+  let x = seed || 123456789;
+  return function(){
+    x ^= x << 13; x ^= x >>> 17; x ^= x << 5;
+    return ((x>>>0) / 4294967296);
+  }
+}
+function pickRandom(arr, rng){
+  return arr[Math.floor((rng?rng():Math.random())*arr.length)];
+}
+function uniquePick(arr, n, rng){
+  const copy = arr.slice();
+  const out = [];
+  while(out.length<n && copy.length){
+    const idx = Math.floor((rng?rng():Math.random())*copy.length);
+    out.push(copy.splice(idx,1)[0]);
+  }
+  return out;
+}
+function hash(str){
+  // simple hash for seeding
+  let h=2166136261;
+  for(let i=0;i<str.length;i++){ h^=str.charCodeAt(i); h+= (h<<1)+(h<<4)+(h<<7)+(h<<8)+(h<<24); }
+  return h>>>0;
+}
+
+function generatePlan(useSeed){
+  const baseSeed = useSeed ? hash(new Date().toDateString()) : Math.floor(Math.random()*1e9);
+  const rng = seededRandom(baseSeed);
+  const plan = {
+    breakfast: avoidDuplicates.checked ? uniquePick(DB.breakfast,1,rng)[0] : pickRandom(DB.breakfast,rng),
+    lunch:     avoidDuplicates.checked ? uniquePick(DB.lunch,1,rng)[0]     : pickRandom(DB.lunch,rng),
+    dinner:    avoidDuplicates.checked ? uniquePick(DB.dinner,1,rng)[0]    : pickRandom(DB.dinner,rng),
+    snack:     avoidDuplicates.checked ? uniquePick(DB.snack,1,rng)[0]     : pickRandom(DB.snack,rng)
+  };
+  render(plan);
+  currentPlan = plan;
+}
+let currentPlan = null;
+
+function render(plan){
+  const order = ["breakfast","lunch","dinner","snack"];
+  cardsEl.innerHTML = "";
+  order.forEach(cat=>{
+    const r = plan[cat];
+    const card = document.createElement('div');
+    card.className='card';
+    card.innerHTML = `
+      <div class="row">
+        <h3>${cap(cat)}: ${escapeHtml(r.title)}</h3>
+        <span class="badge">${cap(cat)}</span>
+      </div>
+      <details open>
+        <summary class="muted">Ingredients</summary>
+        <ul class="list">${r.ingredients.map(x=>`<li>${escapeHtml(x)}</li>`).join('')}</ul>
+      </details>
+      <details>
+        <summary class="muted">Steps</summary>
+        <ol class="list">${r.steps.map(x=>`<li>${escapeHtml(x)}</li>`).join('')}</ol>
+      </details>
+      <div class="inline small" style="margin-top:8px">
+        <button class="copy" data-cat="${cat}">Shuffle this</button>
+      </div>
+    `;
+    cardsEl.appendChild(card);
+  });
+  // bind shuffle buttons
+  cardsEl.querySelectorAll('button.copy').forEach(btn=>{
+    btn.addEventListener('click',()=>shuffleOne(btn.dataset.cat));
+  })
+}
+
+function shuffleOne(cat){
+  const pool = DB[cat];
+  let pick = pickRandom(pool);
+  if(avoidDuplicates.checked){
+    // ensure different from current
+    let tries=0;
+    while(currentPlan && pick.title===currentPlan[cat].title && tries<20){
+      pick = pickRandom(pool);
+      tries++;
+    }
+  }
+  currentPlan[cat] = pick;
+  render(currentPlan);
+}
+
+function cap(s){ return s[0].toUpperCase()+s.slice(1); }
+function escapeHtml(str){ return String(str).replace(/[&<>"']/g, m=>({ "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;" }[m])); }
+
+// grocery list
+function copyGrocery(){
+  if(!currentPlan) return;
+  const all = ["breakfast","lunch","dinner","snack"].flatMap(cat=>currentPlan[cat].ingredients);
+  const text = all.join("\n");
+  navigator.clipboard.writeText(text).then(()=>{
+    toast("Grocery list copied ✅");
+  }).catch(()=>{
+    // fallback: show prompt
+    alert(text);
+  })
+}
+function toast(msg){
+  const t = document.createElement('div');
+  t.textContent = msg;
+  t.style.position='fixed'; t.style.bottom='70px'; t.style.left='50%'; t.style.transform='translateX(-50%)';
+  t.style.background='#111826'; t.style.border='1px solid #1f2937'; t.style.padding='10px 14px'; t.style.borderRadius='999px';
+  t.style.boxShadow='0 4px 30px rgba(0,0,0,.4)'; t.style.zIndex='60';
+  document.body.appendChild(t);
+  setTimeout(()=>t.remove(),1700);
+}
+
+// modal logic
+const modal = document.getElementById('modal');
+document.getElementById('btnCustom').onclick=()=>{ 
+  modal.style.display='flex';
+  document.getElementById('jsonBox').value = JSON.stringify(DB,null,2);
+};
+document.getElementById('closeModal').onclick=()=> modal.style.display='none';
+document.getElementById('saveJson').onclick=()=>{
+  try{
+    const obj = JSON.parse(document.getElementById('jsonBox').value);
+    if(!obj.breakfast||!obj.lunch||!obj.dinner||!obj.snack) throw new Error("Missing categories");
+    DB = obj; saveDB();
+    modal.style.display='none';
+    generatePlan(seedByDate.checked);
+    toast("Saved ✓");
+  }catch(e){
+    alert("Invalid JSON: "+e.message);
+  }
+};
+document.getElementById('clearJson').onclick=()=>{
+  if(confirm("Reset all custom recipes to defaults?")){
+    DB = JSON.parse(JSON.stringify(DEFAULT_DB));
+    saveDB();
+    document.getElementById('jsonBox').value = JSON.stringify(DB,null,2);
+    toast("Reset ✓");
+  }
+};
+// add-one UI
+document.getElementById('addOne').onclick=()=>{
+  document.getElementById('addForm').classList.toggle('hidden');
+};
+document.getElementById('saveOne').onclick=()=>{
+  const cat = document.getElementById('cat').value;
+  const title = document.getElementById('title').value.trim();
+  const ings = document.getElementById('ings').value.split("\n").map(s=>s.trim()).filter(Boolean);
+  const steps = document.getElementById('steps').value.split("\n").map(s=>s.trim()).filter(Boolean);
+  if(!title||!ings.length||!steps.length) return alert("Please fill title, ingredients, steps.");
+  DB[cat].push({title, ingredients:ings, steps});
+  saveDB();
+  document.getElementById('jsonBox').value = JSON.stringify(DB,null,2);
+  document.getElementById('title').value=''; document.getElementById('ings').value=''; document.getElementById('steps').value='';
+  toast("Recipe added ✓");
+};
+
+// buttons
+document.getElementById('btnGenerate').onclick=()=>{
+  const seeded = seedByDate.checked;
+  generatePlan(seeded);
+  toast(seeded ? "Generated for today ✓ (seeded)" : "Generated ✓");
+};
+document.getElementById('btnRandom').onclick=()=>{
+  generatePlan(false);
+  toast("Shuffled ✓");
+};
+document.getElementById('btnGrocery').onclick=copyGrocery;
+
+// initial
+window.addEventListener('load',()=>{
+  generatePlan(seedByDate.checked);
+});
+</script>
+</body>
+</html>
