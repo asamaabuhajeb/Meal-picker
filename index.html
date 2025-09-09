@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Meal Picker — NEO<\/title>
+  <title>Meal Picker — NEO</title>
   <meta name="color-scheme" content="dark">
   <meta name="description" content="Ultra-fast, single-file meal picker that generates Breakfast/Lunch/Dinner/Snack with images, steps, and copy/share tools.">
   <style>
@@ -110,344 +110,149 @@
     @media (prefers-reduced-motion: reduce){
       *{ animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important; scroll-behavior:auto !important; }
     }
-  <\/style>
-<\/head>
+  </style>
+</head>
 <body>
   <header class="topbar">
     <div class="brand">
-      <span class="dot"><\/span>
-      <h1>Meal Picker <em>NEO<\/em><\/h1>
-    <\/div>
+      <span class="dot"></span>
+      <h1>Meal Picker <em>NEO</em></h1>
+    </div>
     <nav class="actions">
-      <button id="generateAll" class="btn primary" aria-label="Generate all meals">Generate Day<\/button>
-      <button id="shuffleAll" class="btn ghost" aria-label="Shuffle meals">Shuffle<\/button>
-      <button id="copyAll" class="btn ghost" aria-label="Copy all meals">Copy<\/button>
-    <\/nav>
-  <\/header>
+      <button id="generateAll" class="btn primary">Generate Day</button>
+      <button id="shuffleAll" class="btn ghost">Shuffle</button>
+      <button id="copyAll" class="btn ghost">Copy</button>
+    </nav>
+  </header>
 
-  <main class="container" id="app" tabindex="-1"><\/main>
+  <main class="container" id="app" tabindex="-1"></main>
 
   <footer class="foot">
-    <div>Single-file • Images auto-sourced • Zero dependencies<\/div>
-    <label class="toggle" title="Reduce animations">
+    <div>Single-file • Images auto-sourced • Zero dependencies</div>
+    <label class="toggle">
       <input type="checkbox" id="reduceMotion">
-      <span>Reduce motion<\/span>
-    <\/label>
-  <\/footer>
+      <span>Reduce motion</span>
+    </label>
+  </footer>
 
-  <!-- Card Template -->
   <template id="mealCardTpl">
-    <section class="card" role="region" aria-live="polite">
+    <section class="card">
       <div class="card__head">
-        <div class="badge" data-type="">Meal<\/div>
-        <h2 class="title"><\/h2>
+        <div class="badge" data-type="">Meal</div>
+        <h2 class="title"></h2>
         <div class="meta">
-          <span class="calories"><\/span>
-          <span class="time"><\/span>
-          <span class="tags"><\/span>
-        <\/div>
-      <\/div>
+          <span class="calories"></span>
+          <span class="time"></span>
+          <span class="tags"></span>
+        </div>
+      </div>
       <div class="ingredients">
-        <h3>Ingredients<\/h3>
-        <ul class="ingList"><\/ul>
-      <\/div>
+        <h3>Ingredients</h3>
+        <ul class="ingList"></ul>
+      </div>
       <div class="steps">
-        <h3>Steps<\/h3>
-        <ol class="stepList"><\/ol>
-      <\/div>
+        <h3>Steps</h3>
+        <ol class="stepList"></ol>
+      </div>
       <div class="card__actions">
-        <button class="btn tiny" data-action="regenerate">Regenerate<\/button>
-        <button class="btn tiny" data-action="swap">Swap<\/button>
-        <button class="btn tiny" data-action="copy">Copy<\/button>
-      <\/div>
-    <\/section>
-  <\/template>
+        <button class="btn tiny" data-action="regenerate">Regenerate</button>
+        <button class="btn tiny" data-action="swap">Swap</button>
+        <button class="btn tiny" data-action="copy">Copy</button>
+      </div>
+    </section>
+  </template>
 
   <script>
-    // ===== Config =====
-    // Turn this ON if you want to avoid loading external images (uses emoji instead)
     const USE_EMOJI_IMAGES = false;
 
-    // ===== Data (extend freely) =====
     const MEAL_DATA = {
       breakfast: [
-        {
-          name: "Zaatar & Labneh Wrap",
-          calories: 420, time: "10 min", tags: ["Vegetarian","Quick"],
-          ingredients: ["flatbread", "labneh", "zaatar", "olive oil", "cucumber", "tomato", "mint"],
-          steps: [
-            "Spread labneh on warm flatbread.",
-            "Sprinkle zaatar and drizzle olive oil.",
-            "Add sliced cucumber, tomato, and mint; roll tightly."
-          ]
-        },
-        {
-          name: "Egg & Halloumi Plate",
-          calories: 480, time: "12 min", tags: ["High-Protein"],
-          ingredients: ["eggs", "halloumi", "olives", "cherry tomatoes", "olive oil"],
-          steps: [
-            "Pan-sear halloumi until golden.",
-            "Fry or scramble eggs.",
-            "Plate with olives and tomatoes, drizzle olive oil."
-          ]
-        }
+        {name:"Zaatar & Labneh Wrap",calories:420,time:"10 min",tags:["Vegetarian","Quick"],
+         ingredients:["flatbread","labneh","zaatar","olive oil","cucumber","tomato","mint"],
+         steps:["Spread labneh on warm flatbread.","Sprinkle zaatar and drizzle olive oil.","Add sliced cucumber, tomato, and mint; roll tightly."]},
+        {name:"Egg & Halloumi Plate",calories:480,time:"12 min",tags:["High-Protein"],
+         ingredients:["eggs","halloumi","olives","cherry tomatoes","olive oil"],
+         steps:["Pan-sear halloumi until golden.","Fry or scramble eggs.","Plate with olives and tomatoes, drizzle olive oil."]}
       ],
       lunch: [
-        {
-          name: "Chicken Shawarma Bowl",
-          calories: 650, time: "25 min", tags: ["Protein","Meal-prep"],
-          ingredients: ["chicken breast", "shawarma spice", "rice", "cabbage", "garlic sauce", "pickles"],
-          steps: [
-            "Season chicken with shawarma spice and pan-sear.",
-            "Serve over rice with shredded cabbage and pickles.",
-            "Drizzle with garlic sauce."
-          ]
-        },
-        {
-          name: "Tuna Pasta Salad",
-          calories: 560, time: "20 min", tags: ["Cold","Quick"],
-          ingredients: ["pasta", "tuna", "sweet corn", "olive oil", "lemon", "parsley"],
-          steps: [
-            "Boil pasta; drain and cool.",
-            "Mix with tuna, corn, chopped parsley.",
-            "Dress with olive oil and lemon."
-          ]
-        }
+        {name:"Chicken Shawarma Bowl",calories:650,time:"25 min",tags:["Protein","Meal-prep"],
+         ingredients:["chicken breast","shawarma spice","rice","cabbage","garlic sauce","pickles"],
+         steps:["Season chicken with shawarma spice and pan-sear.","Serve over rice with shredded cabbage and pickles.","Drizzle with garlic sauce."]},
+        {name:"Tuna Pasta Salad",calories:560,time:"20 min",tags:["Cold","Quick"],
+         ingredients:["pasta","tuna","sweet corn","olive oil","lemon","parsley"],
+         steps:["Boil pasta; drain and cool.","Mix with tuna, corn, chopped parsley.","Dress with olive oil and lemon."]}
       ],
       dinner: [
-        {
-          name: "Grilled Kofta with Bulgur",
-          calories: 700, time: "30 min", tags: ["Balanced"],
-          ingredients: ["kofta", "bulgur", "onion", "tomato", "yogurt", "parsley"],
-          steps: [
-            "Grill kofta until cooked through.",
-            "Simmer bulgur with salt until fluffy.",
-            "Serve with chopped tomato, onion, parsley, and yogurt."
-          ]
-        },
-        {
-          name: "Salmon & Veg Traybake",
-          calories: 590, time: "25 min", tags: ["Omega-3","One-pan"],
-          ingredients: ["salmon", "potatoes", "broccoli", "olive oil", "lemon", "garlic"],
-          steps: [
-            "Roast potato cubes 10 min.",
-            "Add salmon and broccoli; drizzle oil, lemon, garlic; roast 12-15 min."
-          ]
-        }
+        {name:"Grilled Kofta with Bulgur",calories:700,time:"30 min",tags:["Balanced"],
+         ingredients:["kofta","bulgur","onion","tomato","yogurt","parsley"],
+         steps:["Grill kofta until cooked through.","Simmer bulgur with salt until fluffy.","Serve with chopped tomato, onion, parsley, and yogurt."]},
+        {name:"Salmon & Veg Traybake",calories:590,time:"25 min",tags:["Omega-3","One-pan"],
+         ingredients:["salmon","potatoes","broccoli","olive oil","lemon","garlic"],
+         steps:["Roast potato cubes 10 min.","Add salmon and broccoli; drizzle oil, lemon, garlic; roast 12-15 min."]}
       ],
       snack: [
-        {
-          name: "Dates & Peanut Butter",
-          calories: 260, time: "2 min", tags: ["Quick","Sweet"],
-          ingredients: ["medjool dates", "peanut butter", "walnuts"],
-          steps: ["Pit dates, fill with peanut butter, top with walnut pieces."]
-        },
-        {
-          name: "Greek Yogurt Cup",
-          calories: 280, time: "3 min", tags: ["Protein"],
-          ingredients: ["greek yogurt", "honey", "banana", "oats"],
-          steps: ["Layer yogurt with sliced banana, drizzle honey, sprinkle oats."]
-        }
+        {name:"Dates & Peanut Butter",calories:260,time:"2 min",tags:["Quick","Sweet"],
+         ingredients:["medjool dates","peanut butter","walnuts"],
+         steps:["Pit dates, fill with peanut butter, top with walnut pieces."]},
+        {name:"Greek Yogurt Cup",calories:280,time:"3 min",tags:["Protein"],
+         ingredients:["greek yogurt","honey","banana","oats"],
+         steps:["Layer yogurt with sliced banana, drizzle honey, sprinkle oats."]}
       ]
     };
 
-    // ===== App Logic =====
     const TYPES = ["breakfast","lunch","dinner","snack"];
-    const STATE = { meals: {} };
-
-    // Build a generic image for an ingredient
+    const STATE = { meals:{} };
     const imgCache = new Map();
     function imgFor(ingredient){
-      const key = ingredient.toLowerCase().trim().replace(/\\s+/g,'-');
+      const key = ingredient.toLowerCase().replace(/\s+/g,'-');
       if(imgCache.has(key)) return imgCache.get(key);
       let src;
-      if (USE_EMOJI_IMAGES){
-        // Simple emoji "data URL" fallback
-        const emoji = "🍽️";
-        // Render emoji as plain text in a data URL SVG for crispness
-        src = "data:image/svg+xml;utf8," + encodeURIComponent(
-          \`<svg xmlns='http://www.w3.org/2000/svg' width='96' height='96'><rect width='100%' height='100%' fill='%230a1327'/><text x='50%' y='60%' dominant-baseline='middle' text-anchor='middle' font-size='64'>\${emoji}<\/text><\/svg>\`
-        );
-      } else {
-        // No key needed. It returns a generic, license-friendly photo.
-        src = \`https://source.unsplash.com/featured/?\${encodeURIComponent(ingredient)},food\`;
+      if(USE_EMOJI_IMAGES){
+        src="data:image/svg+xml;utf8,"+encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' width='96' height='96'><rect width='100%' height='100%' fill='%230a1327'/><text x='50%' y='60%' text-anchor='middle' font-size='64'>🍽️</text></svg>`);
+      }else{
+        src=`https://source.unsplash.com/featured/?${encodeURIComponent(ingredient)},food`;
       }
-      imgCache.set(key, src);
+      imgCache.set(key,src);
       return src;
     }
 
-    // Helpers
-    const qs = (sel, el=document)=>el.querySelector(sel);
-    function pickRandom(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
-
-    function makeMeal(type){
-      const variant = pickRandom(MEAL_DATA[type]);
-      return {
-        type,
-        name: variant.name,
-        calories: variant.calories,
-        time: variant.time,
-        tags: variant.tags,
-        ingredients: variant.ingredients.slice(),
-        steps: variant.steps.slice()
-      };
-    }
-
+    const qs=(s,e=document)=>e.querySelector(s);
+    function pickRandom(arr){return arr[Math.floor(Math.random()*arr.length)];}
+    function makeMeal(type){const v=pickRandom(MEAL_DATA[type]);return {...v,type};}
     function renderAll(){
-      const app = qs('#app');
-      app.innerHTML = "";
-      TYPES.forEach(t=>{
-        const meal = STATE.meals[t] ?? (STATE.meals[t] = makeMeal(t));
-        app.appendChild(renderCard(meal));
-      });
+      const app=qs('#app');app.innerHTML="";
+      TYPES.forEach(t=>{STATE.meals[t]=STATE.meals[t]||makeMeal(t);app.appendChild(renderCard(STATE.meals[t]));});
     }
-
     function renderCard(meal){
-      const tpl = qs('#mealCardTpl').content.cloneNode(true);
-      const card = tpl.querySelector('.card');
-
-      tpl.querySelector('.badge').textContent = meal.type.toUpperCase();
-      tpl.querySelector('.badge').dataset.type = meal.type;
-      tpl.querySelector('.title').textContent = meal.name;
-      tpl.querySelector('.calories').textContent = \`\${meal.calories} kcal\`;
-      tpl.querySelector('.time').textContent = \`⏱ \${meal.time}\`;
-      tpl.querySelector('.tags').textContent = meal.tags.join(" • ");
-
-      const ingList = tpl.querySelector('.ingList');
+      const tpl=qs('#mealCardTpl').content.cloneNode(true);
+      const card=tpl.querySelector('.card');
+      tpl.querySelector('.badge').textContent=meal.type.toUpperCase();
+      tpl.querySelector('.title').textContent=meal.name;
+      tpl.querySelector('.calories').textContent=`${meal.calories} kcal`;
+      tpl.querySelector('.time').textContent=`⏱ ${meal.time}`;
+      tpl.querySelector('.tags').textContent=meal.tags.join(" • ");
+      const ingList=tpl.querySelector('.ingList');
       meal.ingredients.forEach(ing=>{
-        const li = document.createElement('li');
-        li.className = 'ingItem';
-        const img = document.createElement('img');
-        img.alt = ing;
-        img.loading = 'lazy';
-        img.decoding = 'async';
-        img.src = imgFor(ing);
-        // If external image fails, fallback to an emoji tile
-        img.onerror = ()=>{
-          img.src = "data:image/svg+xml;utf8," + encodeURIComponent(
-            \`<svg xmlns='http://www.w3.org/2000/svg' width='96' height='96'><rect width='100%' height='100%' fill='%230a1327'/><text x='50%' y='60%' dominant-baseline='middle' text-anchor='middle' font-size='64'>🍽️<\/text><\/svg>\`
-          );
-        };
-        const text = document.createElement('span');
-        text.textContent = ing;
-        li.appendChild(img);
-        li.appendChild(text);
-        ingList.appendChild(li);
+        const li=document.createElement('li');li.className='ingItem';
+        const img=document.createElement('img');img.alt=ing;img.loading='lazy';img.src=imgFor(ing);
+        img.onerror=()=>{img.src="data:image/svg+xml;utf8,"+encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' width='96' height='96'><rect width='100%' height='100%' fill='%230a1327'/><text x='50%' y='60%' text-anchor='middle' font-size='64'>🍽️</text></svg>`);};
+        const span=document.createElement('span');span.textContent=ing;
+        li.append(img,span);ingList.appendChild(li);
       });
-
-      const stepList = tpl.querySelector('.stepList');
-      meal.steps.forEach(s=>{
-        const li = document.createElement('li');
-        li.textContent = s;
-        stepList.appendChild(li);
-      });
-
-      // Actions
-      tpl.querySelector('[data-action="regenerate"]').addEventListener('click', ()=>{
-        STATE.meals[meal.type] = makeMeal(meal.type);
-        replaceCard(card, STATE.meals[meal.type]);
-      });
-
-      tpl.querySelector('[data-action="swap"]').addEventListener('click', ()=>{
-        const others = TYPES.filter(t=>t!==meal.type);
-        const pick = pickRandom(others);
-        const newMeal = makeMeal(pick);
-        STATE.meals[pick] = newMeal;
-        replaceCard(card, newMeal);
-      });
-
-      tpl.querySelector('[data-action="copy"]').addEventListener('click', ()=>{
-        const text = stringifyMeal(meal);
-        (navigator.clipboard?.writeText(text) || Promise.reject()).then(()=>{
-          toast("Copied!");
-        }).catch(()=>{
-          // Fallback: create a temp textarea for older browsers
-          const ta = document.createElement('textarea');
-          ta.value = text; document.body.appendChild(ta);
-          ta.select(); try{ document.execCommand('copy'); toast("Copied!"); } catch(e){ toast("Copy failed"); }
-          ta.remove();
-        });
-      });
-
-      if (!reduceMotionOn()){
-        card.style.transform = 'translateY(6px)'; card.style.opacity = '.0';
-        requestAnimationFrame(()=>{
-          requestAnimationFrame(()=>{
-            card.style.transition = 'transform .35s ease, opacity .35s ease';
-            card.style.transform = 'translateY(0)'; card.style.opacity = '1';
-          });
-        });
-      }
+      const stepList=tpl.querySelector('.stepList');
+      meal.steps.forEach(s=>{const li=document.createElement('li');li.textContent=s;stepList.appendChild(li);});
+      tpl.querySelector('[data-action="regenerate"]').onclick=()=>{STATE.meals[meal.type]=makeMeal(meal.type);replaceCard(card,STATE.meals[meal.type]);};
+      tpl.querySelector('[data-action="swap"]').onclick=()=>{const o=TYPES.filter(t=>t!==meal.type);const n=makeMeal(pickRandom(o));STATE.meals[n.type]=n;replaceCard(card,n);};
+      tpl.querySelector('[data-action="copy"]').onclick=()=>{navigator.clipboard.writeText(stringifyMeal(meal)).then(()=>toast("Copied!"));};
       return tpl;
     }
-
-    function replaceCard(oldCard, newMeal){
-      const mount = oldCard.parentElement;
-      const newNode = renderCard(newMeal);
-      if (!reduceMotionOn()){
-        oldCard.style.transform = 'scale(0.98)';
-        oldCard.style.opacity = '0';
-        setTimeout(()=>{ mount.replaceChild(newNode, oldCard); }, 120);
-      } else {
-        mount.replaceChild(newNode, oldCard);
-      }
-    }
-
-    function stringifyMeal(m){
-      return \`\${m.type.toUpperCase()}: \${m.name}
-Calories: \${m.calories} • Time: \${m.time} • \${m.tags.join(", ")}
-
-Ingredients:
-- \${m.ingredients.join("\\n- ")}
-
-Steps:
-\${m.steps.map((s,i)=>\`\${i+1}. \${s}\`).join("\\n")}\`;
-    }
-
-    // Toast
-    let toastEl;
-    function ensureToast(){
-      if (toastEl) return toastEl;
-      toastEl = document.createElement('div');
-      Object.assign(toastEl.style, {
-        position:'fixed', bottom:'22px', left:'50%', transform:'translateX(-50%)',
-        background:'#0b1325', color:'#dff6ff', border:'1px solid #25527a',
-        padding:'10px 14px', borderRadius:'10px', boxShadow:'0 8px 30px rgba(0,0,0,.35)',
-        zIndex:'9999', opacity:'0', transition:'opacity .25s ease'
-      });
-      document.body.appendChild(toastEl);
-      return toastEl;
-    }
-    function toast(msg){
-      const el = ensureToast();
-      el.textContent = msg;
-      el.style.opacity = '1';
-      setTimeout(()=> el.style.opacity='0', 1200);
-    }
-
-    // Top controls
-    const TYPES_ORDER = ["breakfast","lunch","dinner","snack"];
-    document.getElementById('generateAll').addEventListener('click', ()=>{
-      TYPES_ORDER.forEach(t=> STATE.meals[t] = makeMeal(t));
-      renderAll();
-    });
-    document.getElementById('shuffleAll').addEventListener('click', ()=>{
-      TYPES_ORDER.forEach(t=> STATE.meals[t] = makeMeal(t));
-      renderAll();
-    });
-    document.getElementById('copyAll').addEventListener('click', ()=>{
-      const text = TYPES_ORDER.map(t=> stringifyMeal(STATE.meals[t])).join("\\n\\n---\\n\\n");
-      (navigator.clipboard?.writeText(text) || Promise.reject()).then(()=> toast("All meals copied!"));
-    });
-
-    function reduceMotionOn(){
-      return document.getElementById('reduceMotion').checked || window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    }
-    document.getElementById('reduceMotion').addEventListener('change', renderAll);
-
-    // Initial render
-    TYPES_ORDER.forEach(t=> STATE.meals[t] = makeMeal(t));
-    window.addEventListener('DOMContentLoaded', renderAll);
-  <\/script>
-<\/body>
-<\/html>
+    function replaceCard(oldCard,newMeal){oldCard.parentElement.replaceChild(renderCard(newMeal),oldCard);}
+    function stringifyMeal(m){return `${m.type.toUpperCase()}: ${m.name}\nCalories: ${m.calories} • Time: ${m.time} • ${m.tags.join(", ")}\n\nIngredients:\n- ${m.ingredients.join("\n- ")}\n\nSteps:\n${m.steps.map((s,i)=>`${i+1}. ${s}`).join("\n")}`;}
+    let toastEl;function toast(msg){if(!toastEl){toastEl=document.createElement('div');Object.assign(toastEl.style,{position:'fixed',bottom:'22px',left:'50%',transform:'translateX(-50%)',background:'#0b1325',color:'#dff6ff',border:'1px solid #25527a',padding:'10px 14px',borderRadius:'10px',boxShadow:'0 8px 30px rgba(0,0,0,.35)',zIndex:'9999'});document.body.appendChild(toastEl);}toastEl.textContent=msg;toastEl.style.opacity='1';setTimeout(()=>toastEl.style.opacity='0',1200);}
+    qs('#generateAll').onclick=()=>{TYPES.forEach(t=>STATE.meals[t]=makeMeal(t));renderAll();};
+    qs('#shuffleAll').onclick=()=>{TYPES.forEach(t=>STATE.meals[t]=makeMeal(t));renderAll();};
+    qs('#copyAll').onclick=()=>{navigator.clipboard.writeText(TYPES.map(t=>stringifyMeal(STATE.meals[t])).join("\n\n---\n\n")).then(()=>toast("All meals copied!"));};
+    window.addEventListener('DOMContentLoaded',()=>{TYPES.forEach(t=>STATE.meals[t]=makeMeal(t));renderAll();});
+  </script>
+</body>
+</html>
